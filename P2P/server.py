@@ -1,15 +1,18 @@
 import select, socket, sys
 import threading
+import numpy
 
 
 class Server:
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     connections = []
 
-    def __init__(self, port):
-        self.server.bind(('0.0.0.0', port))
+
+    def __init__(self, ip, port):
+        self.server.bind((ip, port))
         self.server.listen(5)
-        print("Server listen on %d" % port)
+        print("Server listen on %s:%d" % (ip, port))
+        self.saveserverup(ip, port)
 
     def handler(self, c, a):
         while True:
@@ -31,3 +34,10 @@ class Server:
             cThread.start()
             self.connections.append(c)
             print(str(a[0]) + ':' + str(a[1]) + " connected")
+
+    def saveserverup(self, ip, port):
+        with open('list_server.txt', 'a') as outfile:
+            outfile.write(str(ip) + ":" + str(port) + "\n")
+
+
+
