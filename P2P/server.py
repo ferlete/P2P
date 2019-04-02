@@ -1,14 +1,9 @@
-# import socket programming library
 import socket
-
-# import thread module
 import threading
-
 import sys
 
 
 class Server:
-    #port = 9999
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     connections = []
 
