@@ -17,7 +17,7 @@ def main():
 
     parser = argparse.ArgumentParser(description='P2P tester')
     parser.add_argument('--type', '-t', help='choice server or client', default='server')  # server or client
-    parser.add_argument('--instance', '-i', help='number of instances', type=int, default=1)  # number of instances of server
+    parser.add_argument('--port', '-p', help='server port', type=int, default=inital_port)  # port Server
     parser.add_argument('--version', '-v', action='version', version='P2P ' + __version__) # show version
     parser.add_argument('--debug', help='increase output verbosity')
 
@@ -25,7 +25,7 @@ def main():
 
     try:
         if args.type == 'server':
-            server = Server(inital_port)
+            server = Server(args.port)
             server.run()
 
         if args.type == 'client':
