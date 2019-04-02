@@ -1,21 +1,21 @@
-import socket
+import select, socket, sys
 import threading
-import sys
 
 
 class Server:
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     connections = []
 
     def __init__(self, port):
-        self.sock.bind(('0.0.0.0', port))
-        self.sock.listen(5)
-        print("Server listen on %s" % port)
+        self.server.bind(('0.0.0.0', port))
+        self.server.listen(5)
+        print("Server listen on %d" % port)
 
     def handler(self, c, a):
         while True:
                 data = c.recv(1024)
                 for conection in self.connections:
+                        data = data [::-1]
                         conection.send(data)
                 if not data:
                     print(str(a[0]) + ':' + str(a[1]) + " disconnected")
@@ -25,7 +25,7 @@ class Server:
 
     def run(self):
         while True:
-            c, a = self.sock.accept()
+            c, a = self.server.accept()
             cThread = threading.Thread(target=self.handler, args=(c, a))
             cThread.daemon = True
             cThread.start()
