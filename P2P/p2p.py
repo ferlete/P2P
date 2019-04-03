@@ -10,15 +10,13 @@ from .info import Info
 from .server import Server
 from .client import Client
 
-list_hosts_peers = [] # list
-list_port_peers = []
+list_hosts_peers = [] # list of hosts servers
+list_port_peers = [] # list of ports servers
 
 def main():
 
     default_port = 9999
     server_ip = '127.0.0.1'
-
-
     info = Info('Andre, Patrik e Valter', 'ferlete@gmail.com')
 
     parser = argparse.ArgumentParser(description='P2P tester')
@@ -36,12 +34,9 @@ def main():
 
         if args.type == 'client':
             loadpeers()
-            #print(list_port_peers)
             for i in range(len(list_hosts_peers)):
-                    #print(list_hosts_peers[i])
-                    #print(list_port_peers[i])
-                    client = Client(str(list_hosts_peers[i]), int(list_port_peers[i]))
-                    client.sendmessage("hello: %s" % i)
+                client = Client(str(list_hosts_peers[i]), int(list_port_peers[i]))
+                client.sendmessage("hello: %s" % i)
 
     except Exception as ex:
         print(ex)
