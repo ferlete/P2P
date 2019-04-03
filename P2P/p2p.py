@@ -8,12 +8,16 @@ import threading
 # import from project P2P
 from .info import Info
 from .server import Server
+from .client import Client
 
+list_hosts_peers = [] # list
+list_port_peers = []
 
 def main():
 
     default_port = 9999
     server_ip = '127.0.0.1'
+
 
     info = Info('Andre, Patrik e Valter', 'ferlete@gmail.com')
 
@@ -31,12 +35,21 @@ def main():
             server.run()
 
         if args.type == 'client':
-            print("Not implemented")
-
-
+            loadpeers()
+            #print(list_port_peers)
+            for i in range(len(list_hosts_peers)):
+                    #print(list_hosts_peers[i])
+                    #print(list_port_peers[i])
+                    client = Client(str(list_hosts_peers[i]), int(list_port_peers[i]))
+                    client.sendmessage("hello: %s" % i)
 
     except Exception as ex:
         print(ex)
 
 
-
+def loadpeers():
+    with open('list_server.txt', 'r') as peers:
+        for peer in peers:
+            ip, port = peer.strip().split(':')
+            list_hosts_peers.append(ip)
+            list_port_peers.append(port)
