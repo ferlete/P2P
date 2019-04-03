@@ -4,18 +4,31 @@ __version__ = "0.1"
 import sys
 import argparse
 import threading
+import time
+from random import randint
 
 # import from project P2P
 from .info import Info
 from .server import Server
 from .client import Client
+from .fileIO import FileIO
+
 
 list_hosts_peers = [] # list of hosts servers
 list_port_peers = [] # list of ports servers
 
+BYTE_SIZE = 1024
+PEER_BYTE_DIFFERENTIATOR = b'\x11'
+RAND_TIME_START = 1
+RAND_TIME_END = 2
+REQUEST_STRING = "req"
+
+ # make ourself the default peer
+peers = ['127.0.0.1:8889']
+
 def main():
 
-    default_port = 9999
+    default_port = 8889
     server_ip = '127.0.0.1'
     info = Info('Andre, Patrik e Valter', 'ferlete@gmail.com')
 
@@ -26,20 +39,28 @@ def main():
     parser.add_argument('--debug', help='increase output verbosity')
 
     args = parser.parse_args()
+    file = FileIO
+    msg = file.convert_to_bytes()
 
-    try:
-        if args.type == 'server':
-            server = Server(server_ip, args.port)
-            server.run()
+    if args.type == 'server':
+        # become the server
+        try:
+            Server(server_ip, args.port, msg)
+        except KeyboardInterrupt:
+            sys.exit()
 
-        if args.type == 'client':
-            loadpeers()
-            for i in range(len(list_hosts_peers)):
-                client = Client(str(list_hosts_peers[i]), int(list_port_peers[i]))
-                client.sendmessage("hello: %s" % i)
+    if args.type == 'client':
+        print("-" * 21 + "Trying to connect" + "-" * 21)
+        for peer in peers:
+            print(peer)
+            try:
+                ip, port = peer.strip().split(':')
+                Client(ip, port)
 
-    except Exception as ex:
-        print(ex)
+            except KeyboardInterrupt:
+                sys.exit(0)
+            except:
+                pass
 
 
 def loadpeers():
