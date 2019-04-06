@@ -20,7 +20,7 @@ class Server:
                 self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 self.s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             if self.protocol == 'UDP':
-                # define a socket UDP
+                # define a socket TCP
                 self.s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
                 self.s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 

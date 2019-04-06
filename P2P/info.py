@@ -5,5 +5,5 @@ class Info(object):
         self.author = author
         self.email = email
 
-    def showinfo(self, version):
-        return self.author + version
+    def get_authors(self):
+        return self.author
