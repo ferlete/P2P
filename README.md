@@ -9,7 +9,7 @@ P2P Simulation
 # New Features!
 
   - UDP Server Suporte
-  -TCP Server Suporte
+  - TCP Server Suporte
 
 ### Installation
 

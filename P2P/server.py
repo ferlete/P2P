@@ -52,7 +52,6 @@ class Server:
         while True:
             # server recieves the message
             data = connection.recv(self.BUFFER_SIZE)
-            print(data)
             for connection in self.connections:
                 # The peer that is connected wants to disconnect
                 if not data or data.decode('utf-8')[0].lower() == 'q':
@@ -125,7 +124,7 @@ class Server:
         send a list of peers to all the peers that are connected to the server
     """
     def save_list_peer(self, ip, port):
-        with open('list_server.txt', 'a') as outfile:
+        with open('list_peer_servers.txt', 'a') as outfile:
             outfile.write(str(ip) + ":" + str(port) + "\n")
 
 

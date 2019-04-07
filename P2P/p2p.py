@@ -60,7 +60,7 @@ def main():
 
 
 def loadpeers():
-    with open('list_server.txt', 'r') as peers:
+    with open('list_peer_servers.txt', 'r') as peers:
         for peer in peers:
             ip, port = peer.strip().split(':')
             list_hosts_peers.append(ip)
