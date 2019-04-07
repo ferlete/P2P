@@ -20,7 +20,7 @@ class Server:
                 self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 self.s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             if self.protocol == 'UDP':
-                # define a socket TCP
+                # define a socket UDP
                 self.s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
                 self.s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
@@ -63,8 +63,7 @@ class Server:
                     print("-" * 3 + " UPLOADING file NOT IMPLEMENTED " + "-" * 3)
                     # if the connection is still active we send it back the data
                     # this part deals with uploading of the file
-                    #connection.send(self.msg)
-                    connection.send(data[::-1])
+                    connection.send(self.msg.encode())
                 else:
                     # send back reversed string to client
                     connection.send(data[::-1])
@@ -75,7 +74,7 @@ class Server:
         if udp_data and udp_data.decode('utf-8').strip() == self.REQUEST_STRING:
             # send file data
             print("-" * 3 + " UPLOADING file NOT IMPLEMENTED" + "-" * 3)
-            self.s.sendto("ok".encode(), client)
+            self.s.sendto(self.msg.encode(), client)
         else:
             pass
 
