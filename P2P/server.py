@@ -70,7 +70,7 @@ class Server:
         cwd = os.getcwd()
         path_to_file = cwd + self.music_folder + filename.decode('utf-8').strip()
 
-        self.slice_file(path_to_file, 3, 1)
+        #self.slice_file(path_to_file, 3, 1)
 
         print("[*] request filename: %s " % path_to_file)
         if os.path.isfile(path_to_file):

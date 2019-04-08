@@ -48,7 +48,7 @@ def main():
             for node_peer in peer.get_list_peer():
                 #print(node_peer.strip())
                 ip, port = node_peer.strip().split(':')
-            Client(str(ip), int(port), "test.txt")
+            Client(str(ip), int(port), "song.mp3")
 
 
     except Exception as ex:
