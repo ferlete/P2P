@@ -2,6 +2,8 @@ import select, socket, sys, os
 import threading
 import numpy
 
+from .peer import Peer
+
 
 class Server:
     connections = []
@@ -10,6 +12,7 @@ class Server:
     REQUEST_STRING = "GET FILE"
     BUFFER_SIZE = 1024
     BLOCK_SIZE = 1024
+    music_folder = "/music/"
 
     def __init__(self, ip, port, protocol):
         try:
@@ -39,8 +42,10 @@ class Server:
 
             print("[*] Server listen on %s %s:%d" % (protocol, ip, port))
 
-            # save peer server to file
-            self.save_list_peer(ip, port)
+            # save peer server node to file
+            peer = Peer()
+            peer.save_new_peer_server(ip, port)
+
 
             self.run()
 
@@ -52,7 +57,7 @@ class Server:
         filename = connection.recv(self.BUFFER_SIZE)
 
         cwd = os.getcwd()
-        path_to_file = cwd + "/music/" + filename.decode('utf-8').strip()
+        path_to_file = cwd + self.music_folder + filename.decode('utf-8').strip()
 
         print("[*] request filename: %s " % path_to_file)
         if os.path.isfile(path_to_file):
@@ -120,12 +125,7 @@ class Server:
         #self.send_peers()
         print("[-] disconnected {}".format(a))
 
-    """
-        send a list of peers to all the peers that are connected to the server
-    """
-    def save_list_peer(self, ip, port):
-        with open('list_peer_servers.txt', 'a') as outfile:
-            outfile.write(str(ip) + ":" + str(port) + "\n")
+
 
 
 

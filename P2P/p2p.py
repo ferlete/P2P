@@ -22,7 +22,7 @@ def main():
     info = Info('authors', 'ferlete@gmail.com', 'P2P FACOM')
     transport = "TCP"
 
-    parser = argparse.ArgumentParser(description='P2P tester')
+    parser = argparse.ArgumentParser(description=info.get_app_name())
     parser.add_argument('--type', '-t', dest="type", help='choice server or client',
                         default='server')  # server or client
     parser.add_argument('--tcp', dest="tcp", action='store_true', help='use TCP for transport', default=True,
