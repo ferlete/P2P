@@ -30,11 +30,3 @@ class Music:
         song.export(output, format="mp3", bitrate="192k")
         converted_sound = AudioSegment.from_mp3(cwd + "/music/copy.mp3")
         print("Done")
-
-# if __name__ == "__main__":
-#     music = convert()
-#     convert_to_music(music)
-#     if sound == converted_sound:
-#         print("They are the same")
-#     else:
-#         print("They are not the same")
