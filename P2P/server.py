@@ -1,4 +1,4 @@
-import select, socket, sys
+import select, socket, sys, os
 import threading
 import numpy
 
@@ -9,10 +9,11 @@ class Server:
     protocol = 'TCP'
     REQUEST_STRING = "GET FILE"
     BUFFER_SIZE = 1024
+    BLOCK_SIZE = 1024
 
-    def __init__(self, ip, port, protocol, msg):
+    def __init__(self, ip, port, protocol):
         try:
-            self.msg = msg
+            #self.msg = msg
             self.protocol = protocol
 
             if self.protocol == 'TCP':
@@ -48,35 +49,37 @@ class Server:
         sys.exit()
 
     def handler_tcp(self, connection, a):
-        print("handle_tcp")
-        while True:
-            # server recieves the message
-            data = connection.recv(self.BUFFER_SIZE)
-            for connection in self.connections:
-                # The peer that is connected wants to disconnect
-                if not data or data.decode('utf-8')[0].lower() == 'q':
-                    # disconnect the peer
-                    self.disconnect(connection, a)
-                    return
-                elif data and data.decode('utf-8') == self.REQUEST_STRING:
-                    print("-" * 3 + " UPLOADING file NOT IMPLEMENTED " + "-" * 3)
-                    # if the connection is still active we send it back the data
-                    # this part deals with uploading of the file
-                    connection.send(self.msg.encode())
-                else:
-                    # send back reversed string to client
-                    connection.send(data[::-1])
-        connection.close()
+        filename = connection.recv(self.BUFFER_SIZE)
+
+        cwd = os.getcwd()
+        path_to_file = cwd + "/music/" + filename.decode('utf-8').strip()
+
+        print("[*] request filename: %s " % path_to_file)
+        if os.path.isfile(path_to_file):
+            response = "EXISTS " + str(os.path.getsize(path_to_file))
+            connection.send(response.encode())
+            userResponse = connection.recv(self.BUFFER_SIZE)
+            if userResponse[:2].decode() == "OK":
+                print("[+] sending file...")
+                with open(path_to_file, 'rb') as f:
+                    bytesToSend = f.read(self.BLOCK_SIZE)
+                    connection.send(bytesToSend)
+                    while bytesToSend != "":
+                        bytesToSend = f.read(self.BLOCK_SIZE)
+                        connection.send(bytesToSend)
+            print("[+] upload completed")
+        else:
+            connection.send("ERR".encode())
+        self.disconnect(connection,a)
 
     def handler_udp(self, client, udp_data):
         # seek for "GET FILE"
         if udp_data and udp_data.decode('utf-8').strip() == self.REQUEST_STRING:
             # send file data
-            print("-" * 3 + " UPLOADING file NOT IMPLEMENTED" + "-" * 3)
-            self.s.sendto(self.msg.encode(), client)
+            print("-" * 3 + " UPLOADING file NOT IMPLEMENTED for UDP" + "-" * 3)
+            self.s.sendto(self.msg, client)
         else:
             pass
-
 
     def run(self):
         # constantly listeen for connections
@@ -87,7 +90,7 @@ class Server:
                 connection, a = self.s.accept()
                 # append to the list of peers
                 self.peers.append(a)
-                print("Peers client are: {}".format(self.peers))
+                print("[+] Peers client are: {}".format(self.peers))
                 # self.send_peers()
 
                 # create a thread for a TCP connection
@@ -95,14 +98,12 @@ class Server:
                 c_thread.daemon = True
                 c_thread.start()
                 self.connections.append(connection)
-                print("{}, connected TCP".format(a))
-                print("-" * 50)
 
         if self.protocol == 'UDP':
             while True:
                 data, client = self.s.recvfrom(1024)
                 if data:
-                    print('Received data from client %s: %s' % client, data.decode('utf-8'))
+                    print('[*] Received data from client %s: %s' % client, data.decode('utf-8'))
                     # create a thread for a UDP connection
                     c_thread = threading.Thread(target=self.handler_udp, args=(client, data))
                     c_thread.daemon = False
@@ -117,8 +118,7 @@ class Server:
         self.peers.remove(a)
         connection.close()
         #self.send_peers()
-        print("{}, disconnected".format(a))
-        print("-" * 50)
+        print("[-] disconnected {}".format(a))
 
     """
         send a list of peers to all the peers that are connected to the server

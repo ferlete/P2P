@@ -1,7 +1,7 @@
 __version__ = "0.1"
 
 # import from python
-import sys
+import sys, os
 import argparse
 import threading
 
@@ -9,9 +9,7 @@ import threading
 from .info import Info
 from .server import Server
 from .client import Client
-
-list_hosts_peers = []  # list of hosts servers
-list_port_peers = []  # list of ports servers
+from .peer import Peer
 
 PEER_BYTE_DIFFERENTIATOR = b'\x11'
 RAND_TIME_START = 1
@@ -21,8 +19,7 @@ RAND_TIME_END = 2
 def main():
     default_port = 9999
     server_ip = '127.0.0.1'
-    info = Info('Andre, Patrik e Valter', 'ferlete@gmail.com')
-    msg = "Server Hello"
+    info = Info('authors', 'ferlete@gmail.com', 'P2P FACOM')
     transport = "TCP"
 
     parser = argparse.ArgumentParser(description='P2P tester')
@@ -33,7 +30,7 @@ def main():
     parser.add_argument('--udp', dest="udp", action='store_true', help='use UDP for transport', default=False,
                         required=False)  # User default TCP for transport
     parser.add_argument('--port', '-p', dest="port", help='server port', type=int, default=default_port)  # port Server
-    parser.add_argument('--version', '-v', action='version', version='P2P tester version ' + __version__)  # show version
+    parser.add_argument('--version', '-v', action='version', version=info.get_app_name() + __version__)  # show version
     parser.add_argument('--debug', help='increase output verbosity')
 
     args = parser.parse_args()
@@ -42,26 +39,24 @@ def main():
     if args.udp:
         transport = "UDP"
 
-    print("P2P tester version " + __version__)
-    print(info.get_authors())
+
 
     try:
+
         if args.type == 'server':
-            Server(server_ip, args.port, transport, msg)
+            # start server
+            Server(server_ip, args.port, transport)
 
         if args.type == 'client':
-            loadpeers()
-            #for i in range(len(list_hosts_peers)):
-            Client(str(list_hosts_peers[0]), int(list_port_peers[0]))
+            peer = Peer()
+            for node_peer in peer.get_list_peer():
+                #print(node_peer.strip())
+                ip, port = node_peer.strip().split(':')
+            Client(str(ip), int(port), "song.mp3")
 
 
     except Exception as ex:
         print(ex)
 
 
-def loadpeers():
-    with open('list_peer_servers.txt', 'r') as peers:
-        for peer in peers:
-            ip, port = peer.strip().split(':')
-            list_hosts_peers.append(ip)
-            list_port_peers.append(port)
+
