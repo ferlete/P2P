@@ -16,7 +16,6 @@ class Server:
 
     def __init__(self, ip, port, protocol):
         try:
-            #self.msg = msg
             self.protocol = protocol
 
             if self.protocol == 'TCP':
@@ -53,11 +52,25 @@ class Server:
             print(e)
         sys.exit()
 
+    def slice_file(self, filename, number_peers, part_number):
+        if os.path.isfile(filename):
+            fo = open(filename, "wt")
+            size_file = os.path.getsize(filename)
+            size_per_node = int(size_file / number_peers)
+            fo.seek(0, 0)
+            str = fo.read(25)
+            print(size_file)
+            print(size_per_node)
+
+
+
     def handler_tcp(self, connection, a):
         filename = connection.recv(self.BUFFER_SIZE)
 
         cwd = os.getcwd()
         path_to_file = cwd + self.music_folder + filename.decode('utf-8').strip()
+
+        self.slice_file(path_to_file, 3, 1)
 
         print("[*] request filename: %s " % path_to_file)
         if os.path.isfile(path_to_file):

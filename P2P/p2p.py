@@ -11,10 +11,6 @@ from .server import Server
 from .client import Client
 from .peer import Peer
 
-PEER_BYTE_DIFFERENTIATOR = b'\x11'
-RAND_TIME_START = 1
-RAND_TIME_END = 2
-
 
 def main():
     default_port = 9999
@@ -52,7 +48,7 @@ def main():
             for node_peer in peer.get_list_peer():
                 #print(node_peer.strip())
                 ip, port = node_peer.strip().split(':')
-            Client(str(ip), int(port), "song.mp3")
+            Client(str(ip), int(port), "test.txt")
 
 
     except Exception as ex:
