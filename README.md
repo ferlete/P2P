@@ -10,6 +10,7 @@ P2P Simulation
 
   - UDP Server Suporte
   - TCP Server Suporte
+  - Split the file in part and send only the part that the client requests
 
 ### Installation
 
