@@ -1,15 +1,21 @@
 __version__ = "0.1"
 
-# import from python
-import sys, os
 import argparse
+import os
+import sys
 import threading
 
-# import from project P2P
-from .info import Info
-from .server import Server
 from .client import Client
+from .info import Info
 from .peer import Peer
+from .server import Server
+from .fileIO import FileIO
+
+MUSIC_FOLDER = "/music/"
+byte = 1
+kilobyte = byte * 1024
+megabyte = kilobyte * 1024
+BLOCK_SIZE = int(1 * megabyte)  # file block size in bytes
 
 
 def main():
@@ -39,7 +45,7 @@ def main():
 
         if args.type == 'server':
             # start server
-            Server(server_ip, args.port, transport)
+            Server(server_ip, args.port, transport, MUSIC_FOLDER, BLOCK_SIZE)
 
         if args.type == 'client':
             filename = input('Informe nome do arquivo: ')
@@ -47,9 +53,7 @@ def main():
             for node_peer in peer.get_list_peer():
                 #print(node_peer.strip())
                 ip, port = node_peer.strip().split(':')
-            Client(str(ip), int(port), filename)
-
-
+            Client(str(ip), int(port), filename, 1)
     except Exception as ex:
         print(ex)
 

@@ -3,12 +3,14 @@ import sys
 import threading
 import os
 
+
 class Client:
 
     BUFFER_SIZE = 1024
     REQUEST_STRING = "GET FILE"
 
-    def __init__(self, ip, port, filename):
+    def __init__(self, ip, port, filename, slice):
+        self.slice = slice
         try:
             # Create a TCP/IP socket
             self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -35,22 +37,27 @@ class Client:
             print("[+] resquest filename %s" % filename)
             socket.send(filename.encode())
             data = socket.recv(self.BUFFER_SIZE)
-            if (data[:6].decode() == 'EXISTS'):
-
+            print(data)
+            if data[:6].decode() == 'EXISTS':
                 cwd = os.getcwd()
-                path_to_newfile = cwd + "/music/new_" + filename.strip()
+                path_to_newfile = cwd + "/music/slice_" + str(self.slice) + "_" + filename.strip()
 
-                filesize = int(data[6:])
-                socket.send("OK".encode())
-                f = open(path_to_newfile,'wb')
+                socket.send(("SLICE"+str(self.slice)).encode())
+                data = socket.recv(self.BUFFER_SIZE)
+                #print(data)
+
+                slicesize = int(data[3:])
+                #print("slicesize: %d" % slicesize)
+
+                f = open(path_to_newfile, 'wb')
                 data = socket.recv(self.BUFFER_SIZE)
                 totalRecv = len(data)
                 f.write(data)
-                while totalRecv < filesize:
+                while totalRecv < slicesize:
                     data = socket.recv(self.BUFFER_SIZE)
                     totalRecv += len(data)
                     f.write(data)
-                    print("{0:.2f}".format((totalRecv/float(filesize))*100)+"% Done")
+                    print("{0:.2f}".format((totalRecv/float(slicesize))*100)+"% Done")
                 print("[+] Download Complete!")
             else:
                 print("[-] File does not Exists")

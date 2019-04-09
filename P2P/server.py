@@ -3,20 +3,21 @@ import threading
 import numpy
 
 from .peer import Peer
+from .fileIO import FileIO
 
 
 class Server:
     connections = []
-    msg = ""
-    protocol = 'TCP'
     REQUEST_STRING = "GET FILE"
     BUFFER_SIZE = 1024
     BLOCK_SIZE = 1024
-    music_folder = "/music/"
 
-    def __init__(self, ip, port, protocol):
+    def __init__(self, ip, port, protocol, music_folder, block_size):
         try:
+
             self.protocol = protocol
+            self.music_folder = music_folder
+            self.block_size = block_size
 
             if self.protocol == 'TCP':
                 # define a socket TCP
@@ -45,24 +46,11 @@ class Server:
             peer = Peer()
             peer.save_new_peer_server(ip, port)
 
-
             self.run()
 
         except Exception as e:
             print(e)
         sys.exit()
-
-    def slice_file(self, filename, number_peers, part_number):
-        if os.path.isfile(filename):
-            fo = open(filename, "wt")
-            size_file = os.path.getsize(filename)
-            size_per_node = int(size_file / number_peers)
-            fo.seek(0, 0)
-            str = fo.read(25)
-            print(size_file)
-            print(size_per_node)
-
-
 
     def handler_tcp(self, connection, a):
         filename = connection.recv(self.BUFFER_SIZE)
@@ -70,22 +58,24 @@ class Server:
         cwd = os.getcwd()
         path_to_file = cwd + self.music_folder + filename.decode('utf-8').strip()
 
-        #self.slice_file(path_to_file, 3, 1)
-
         print("[*] request filename: %s " % path_to_file)
         if os.path.isfile(path_to_file):
-            response = "EXISTS " + str(os.path.getsize(path_to_file))
+            response = "EXISTS"
             connection.send(response.encode())
             userResponse = connection.recv(self.BUFFER_SIZE)
-            if userResponse[:2].decode() == "OK":
-                print("[+] sending file...")
-                with open(path_to_file, 'rb') as f:
-                    bytesToSend = f.read(self.BLOCK_SIZE)
-                    connection.send(bytesToSend)
-                    while len(bytesToSend) > 0:
-                        bytesToSend = f.read(self.BLOCK_SIZE)
-                        connection.send(bytesToSend)
-                    print("[+] upload completed")
+            if userResponse[:5].decode() == "SLICE":
+                slice = userResponse[5:].decode()
+                #print("slice %s" % slice)
+                file = FileIO(self.music_folder, self.block_size)
+                bytesToSend = file.get_slice_file(filename.decode('utf-8').strip(), int(slice))
+                #print(bytesToSend) for debug
+                response = "LEN" + str(len(bytesToSend))
+                connection.send(response.encode())
+
+                print("[+] sending slice %s" % slice)
+                connection.send(bytesToSend)
+                print("[+] upload slice completed")
+
         else:
             connection.send("ERR".encode())
         self.disconnect(connection,a)

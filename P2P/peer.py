@@ -3,7 +3,7 @@ import sys, os
 import threading
 
 
-class Peer():
+class Peer:
 
     def __init__(self):
         cwd = os.getcwd()
@@ -39,3 +39,9 @@ class Peer():
             with open(self.filename_peer, 'a') as outfile:
                 outfile.write(str(ip) + ":" + str(port) + "\n")
             outfile.close()
+
+    """
+        Check if host is active
+    """
+    def check_peer_alive(self, ip, port):
+        pass
