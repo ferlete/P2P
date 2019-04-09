@@ -82,10 +82,10 @@ class Server:
                 with open(path_to_file, 'rb') as f:
                     bytesToSend = f.read(self.BLOCK_SIZE)
                     connection.send(bytesToSend)
-                    while bytesToSend != "":
+                    while len(bytesToSend) > 0:
                         bytesToSend = f.read(self.BLOCK_SIZE)
                         connection.send(bytesToSend)
-            print("[+] upload completed")
+                    print("[+] upload completed")
         else:
             connection.send("ERR".encode())
         self.disconnect(connection,a)

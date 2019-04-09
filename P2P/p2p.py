@@ -35,8 +35,6 @@ def main():
     if args.udp:
         transport = "UDP"
 
-
-
     try:
 
         if args.type == 'server':
@@ -44,11 +42,12 @@ def main():
             Server(server_ip, args.port, transport)
 
         if args.type == 'client':
+            filename = input('Informe nome do arquivo: ')
             peer = Peer()
             for node_peer in peer.get_list_peer():
                 #print(node_peer.strip())
                 ip, port = node_peer.strip().split(':')
-            Client(str(ip), int(port), "song.mp3")
+            Client(str(ip), int(port), filename)
 
 
     except Exception as ex:

@@ -42,5 +42,5 @@ $ python3 p2p-runner.py -t server -p 8000 --udp
 For run TCP Client
 ```sh
 $ cd P2P 
-$ python3 p2p-runner.py -t client -p 8000 
+$ python3 p2p-runner.py -t client 
 ```
