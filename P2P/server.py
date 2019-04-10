@@ -8,14 +8,16 @@ from .fileIO import FileIO
 
 class Server:
     connections = []
-    REQUEST_STRING = "GET FILE"
+    REQUEST_FILE = "GET FILE:"
     BUFFER_SIZE = 1024
     BLOCK_SIZE = 1024
+    SEQUENCIAL_POLICY = 'sequencial'
 
-    def __init__(self, ip, port, protocol, music_folder, block_size):
+    def __init__(self, ip, port, protocol, music_folder, block_size, policy):
         try:
 
             self.protocol = protocol
+            self.policy = policy
             self.music_folder = music_folder
             self.block_size = block_size
 
@@ -40,11 +42,11 @@ class Server:
                 # listen for connection
                 self.s.listen(1)
 
-            print("[*] Server listen on %s %s:%d" % (protocol, ip, port))
+            print("[*] Server listen on %s %s:%d method %s" % (protocol, ip, port, policy))
 
             # save peer server node to file
             peer = Peer()
-            peer.save_new_peer_server(ip, port)
+            peer.save_new_seeder(ip, port)
 
             self.run()
 
@@ -67,27 +69,42 @@ class Server:
                 slice = userResponse[5:].decode()
                 #print("slice %s" % slice)
                 file = FileIO(self.music_folder, self.block_size)
-                bytesToSend = file.get_slice_file(filename.decode('utf-8').strip(), int(slice))
-                #print(bytesToSend) for debug
-                response = "LEN" + str(len(bytesToSend))
-                connection.send(response.encode())
-
-                print("[+] sending slice %s" % slice)
-                connection.send(bytesToSend)
-                print("[+] upload slice completed")
-
+                if file.slice_exists(filename.decode('utf-8').strip(),int(slice)):
+                    bytesToSend = file.get_slice_file(filename.decode('utf-8').strip(), int(slice))
+                    #print(bytesToSend) for debug
+                    response = "LEN" + str(len(bytesToSend))
+                    connection.send(response.encode())
+                    print("[+] sending slice %s" % slice)
+                    connection.send(bytesToSend)
+                    print("[+] upload slice completed")
+                else:
+                    response = "LEN0"
+                    bytesToSend = ''
+                    connection.send(response.encode())
+                    print("[-] slice %s not found" % slice)
         else:
             connection.send("ERR".encode())
         self.disconnect(connection,a)
 
     def handler_udp(self, client, udp_data):
-        # seek for "GET FILE"
-        if udp_data and udp_data.decode('utf-8').strip() == self.REQUEST_STRING:
+        # "GET FILE:"
+        if udp_data[:9].decode('utf-8').strip() == self.REQUEST_FILE:
             # send file data
-            print("-" * 3 + " UPLOADING file NOT IMPLEMENTED for UDP" + "-" * 3)
-            self.s.sendto(self.msg, client)
+            filename = udp_data[9:].decode('utf-8').strip()
+            print("[*] Leecher request filename: %s " % filename)
+            file = FileIO(self.music_folder, self.block_size)
+            if file.file_exists(filename):
+                responde = 'EXISTS ' + str(file.get_file_size(filename))
+                self.s.sendto(responde.encode('utf-8'), client)
+                if self.policy == self.SEQUENCIAL_POLICY:
+                       self.send_file_sequencial(filename, client)
+            else:
+                self.s.sendto("FILE NOT FOUND".encode('utf-8'), client)
         else:
             pass
+
+    def send_file_sequencial(self, filename, socket):
+        pass
 
     def run(self):
         # constantly listeen for connections
@@ -98,7 +115,7 @@ class Server:
                 connection, a = self.s.accept()
                 # append to the list of peers
                 self.peers.append(a)
-                print("[+] Peers client are: {}".format(self.peers))
+                print("[+] Leechers are: {}".format(self.peers))
                 # self.send_peers()
 
                 # create a thread for a TCP connection
@@ -111,12 +128,11 @@ class Server:
             while True:
                 data, client = self.s.recvfrom(1024)
                 if data:
-                    print('[*] Received data from client %s: %s' % client, data.decode('utf-8'))
+                    #print('[*] Received data from leecher %s: %s' % client, data.decode('utf-8'))
                     # create a thread for a UDP connection
                     c_thread = threading.Thread(target=self.handler_udp, args=(client, data))
                     c_thread.daemon = False
                     c_thread.start()
-                    print("-" * 50)
 
     """
         This method is run when the user disconencts

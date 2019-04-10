@@ -37,7 +37,7 @@ class Client:
             print("[+] resquest filename %s" % filename)
             socket.send(filename.encode())
             data = socket.recv(self.BUFFER_SIZE)
-            print(data)
+            #print(data)
             if data[:6].decode() == 'EXISTS':
                 cwd = os.getcwd()
                 path_to_newfile = cwd + "/music/slice_" + str(self.slice) + "_" + filename.strip()
@@ -47,18 +47,21 @@ class Client:
                 #print(data)
 
                 slicesize = int(data[3:])
-                #print("slicesize: %d" % slicesize)
-
-                f = open(path_to_newfile, 'wb')
-                data = socket.recv(self.BUFFER_SIZE)
-                totalRecv = len(data)
-                f.write(data)
-                while totalRecv < slicesize:
+                print("slicesize: %d" % slicesize)
+                if slicesize == 0:
+                    print("[-] slice not found in server")
                     data = socket.recv(self.BUFFER_SIZE)
-                    totalRecv += len(data)
+                else:
+                    f = open(path_to_newfile, 'wb')
+                    data = socket.recv(self.BUFFER_SIZE)
+                    totalRecv = len(data)
                     f.write(data)
-                    print("{0:.2f}".format((totalRecv/float(slicesize))*100)+"% Done")
-                print("[+] Download Complete!")
+                    while totalRecv < slicesize:
+                        data = socket.recv(self.BUFFER_SIZE)
+                        totalRecv += len(data)
+                        f.write(data)
+                        #print("{0:.2f}".format((totalRecv/float(slicesize))*100)+"% Done")
+                    print("[+] Download Complete!")
             else:
                 print("[-] File does not Exists")
             socket.close()

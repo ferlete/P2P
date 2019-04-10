@@ -7,23 +7,25 @@ class FileIO:
         self.music_folder = music_folder
         self.block_size = block_size
 
-    def get_slice_file(self, filename, slice):
-        data = ''
+    def slice_exists(self, filename, slice):
         if self.file_exists(filename):
             sizefile = self.get_file_size(filename)
             num_chunk = self.calc_number_chunk(sizefile)
             if slice > num_chunk:
-                print("slice not found")
+                return False
             else:
-                pos = (slice * self.block_size)
-                with open(self.get_path(filename), 'rb') as f:
-                    f.seek(pos, 0)
-                    data = f.read(self.block_size)
-                f.close()
-
+                return True
         else:
-            print("File not found")
+            return False
 
+    def get_slice_file(self, filename, slice):
+        sizefile = self.get_file_size(filename)
+        num_chunk = self.calc_number_chunk(sizefile)
+        pos = (slice * self.block_size)
+        with open(self.get_path(filename), 'rb') as f:
+            f.seek(pos, 0)
+            data = f.read(self.block_size)
+        f.close()
         return data
 
     def file_exists(self, filename):

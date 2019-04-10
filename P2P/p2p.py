@@ -15,14 +15,14 @@ MUSIC_FOLDER = "/music/"
 byte = 1
 kilobyte = byte * 1024
 megabyte = kilobyte * 1024
-BLOCK_SIZE = int(1 * megabyte)  # file block size in bytes
+BLOCK_SIZE = int(160 * byte)  # file block size in bytes
 
 
 def main():
     default_port = 9999
     server_ip = '127.0.0.1'
     info = Info('authors', 'ferlete@gmail.com', 'P2P FACOM')
-    transport = "TCP"
+    policy = 'sequential'
 
     parser = argparse.ArgumentParser(description=info.get_app_name())
     parser.add_argument('--type', '-t', dest="type", help='choice server or client',
@@ -31,6 +31,8 @@ def main():
                         required=False)  # User default TCP for transport
     parser.add_argument('--udp', dest="udp", action='store_true', help='use UDP for transport', default=False,
                         required=False)  # User default TCP for transport
+    parser.add_argument('--policy', '-m', dest="policy", help='transmission policy', type=str,
+                        default=policy)  # transmission policy
     parser.add_argument('--port', '-p', dest="port", help='server port', type=int, default=default_port)  # port Server
     parser.add_argument('--version', '-v', action='version', version=info.get_app_name() + __version__)  # show version
     parser.add_argument('--debug', help='increase output verbosity')
@@ -41,21 +43,22 @@ def main():
     if args.udp:
         transport = "UDP"
 
+    if args.policy == 'randon':
+        policy = 'randon'
+
+
     try:
 
         if args.type == 'server':
             # start server
-            Server(server_ip, args.port, transport, MUSIC_FOLDER, BLOCK_SIZE)
+            Server(server_ip, args.port, transport, MUSIC_FOLDER, BLOCK_SIZE, policy)
 
         if args.type == 'client':
             filename = input('Informe nome do arquivo: ')
             peer = Peer()
-            for node_peer in peer.get_list_peer():
-                #print(node_peer.strip())
-                ip, port = node_peer.strip().split(':')
+            for seeder in peer.get_list_seeder():
+                # print(seeder.strip())
+                ip, port = seeder.strip().split(':')
             Client(str(ip), int(port), filename, 1)
     except Exception as ex:
         print(ex)
-
-
-
