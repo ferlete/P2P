@@ -10,12 +10,7 @@ from .info import Info
 from .peer import Peer
 from .server import Server
 from .fileIO import FileIO
-
-MUSIC_FOLDER = "/music/"
-byte = 1
-kilobyte = byte * 1024
-megabyte = kilobyte * 1024
-BLOCK_SIZE = int(160 * byte)  # file block size in bytes
+from P2P.constants import *
 
 
 def main():
@@ -27,10 +22,6 @@ def main():
     parser = argparse.ArgumentParser(description=info.get_app_name())
     parser.add_argument('--type', '-t', dest="type", help='choice server or client',
                         default='server')  # server or client
-    parser.add_argument('--tcp', dest="tcp", action='store_true', help='use TCP for transport', default=True,
-                        required=False)  # User default TCP for transport
-    parser.add_argument('--udp', dest="udp", action='store_true', help='use UDP for transport', default=False,
-                        required=False)  # User default TCP for transport
     parser.add_argument('--policy', '-m', dest="policy", help='transmission policy', type=str,
                         default=policy)  # transmission policy
     parser.add_argument('--port', '-p', dest="port", help='server port', type=int, default=default_port)  # port Server
@@ -38,20 +29,14 @@ def main():
     parser.add_argument('--debug', help='increase output verbosity')
 
     args = parser.parse_args()
-    if args.tcp:
-        transport = "TCP"
-    if args.udp:
-        transport = "UDP"
-
     if args.policy == 'randon':
         policy = 'randon'
-
 
     try:
 
         if args.type == 'server':
             # start server
-            Server(server_ip, args.port, transport, MUSIC_FOLDER, BLOCK_SIZE, policy)
+            Server(server_ip, args.port, MUSIC_FOLDER, BLOCK_SIZE, policy)
 
         if args.type == 'client':
             filename = input('Informe nome do arquivo: ')
@@ -59,6 +44,9 @@ def main():
             for seeder in peer.get_list_seeder():
                 # print(seeder.strip())
                 ip, port = seeder.strip().split(':')
-            Client(str(ip), int(port), filename, 1)
+
+            Client(str(ip), int(port), filename)
+            #clientUDP.retr_file()
+
     except Exception as ex:
         print(ex)

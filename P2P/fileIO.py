@@ -18,6 +18,12 @@ class FileIO:
         else:
             return False
 
+    def get_file(self, filename):
+        with open(self.get_path(filename), 'rb') as f:
+            data = f.read()
+        f.close()
+        return data
+
     def get_slice_file(self, filename, slice):
         sizefile = self.get_file_size(filename)
         num_chunk = self.calc_number_chunk(sizefile)
