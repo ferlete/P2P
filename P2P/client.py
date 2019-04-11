@@ -35,54 +35,31 @@ class Client:
         sys.exit()
 
     def retr_file(self):
-        try:
-            print("[+] resquest filename %s" % self.filename)
-            request = GET_FILE_STRING + self.filename
+        print("[+] resquest filename %s" % self.filename)
+        request = GET_FILE_STRING + self.filename
+        self.socket.sendto(request.encode(), self.server_address)
+        data, server = self.socket.recvfrom(BUFFER_SIZE)
+        print(data.decode())
+        if data[:7].decode() == EXISTS_STRING:
+            file_size = int(data[7:].decode())
+            num_of_packet = int(self.calc_number_chunk(file_size))
+            request = DOWNLOAD_STRING + self.filename
             self.socket.sendto(request.encode(), self.server_address)
-            data, server = self.socket.recvfrom(BUFFER_SIZE)
-            print(data.decode())
-            if data[:7].decode() == EXISTS_STRING:
-                file_size = int(data[7:].decode())
-                num_of_packet = int(self.calc_number_chunk(file_size))
-
-                request = DOWNLOAD_STRING + self.filename
-                self.socket.sendto(request.encode(), self.server_address)
-
-                while True:
+            f = open(self.filename+".dow", 'wb')
+            data, addr = self.socket.recvfrom(BUFFER_SIZE)
+            try:
+                while(data):
+                    f.write(data)
+                    self.socket.settimeout(2)
                     data, addr = self.socket.recvfrom(BUFFER_SIZE)
                     print("received message: %s" % data)
-
-                #cwd = os.getcwd()
-                #path_to_newfile = cwd + "/music/slice_" + str(self.slice) + "_" + self.filename.strip()
-
-                #socket.sendto(("SLICE"+str(self.slice)).encode())
-                #data = socket.recv(self.BUFFER_SIZE)
-                #print(data)
-
-                #slicesize = int(data[3:])
-                #print("slicesize: %d" % slicesize)
-                # if slicesize == 0:
-                #     print("[-] slice not found in server")
-                #     data = socket.recv(self.BUFFER_SIZE)
-                # else:
-                #     f = open(path_to_newfile, 'wb')
-                #     data = socket.recv(self.BUFFER_SIZE)
-                #     totalRecv = len(data)
-                #     f.write(data)
-                #     while totalRecv < slicesize:
-                #         data = socket.recv(self.BUFFER_SIZE)
-                #         totalRecv += len(data)
-                #         f.write(data)
-                #         #print("{0:.2f}".format((totalRecv/float(slicesize))*100)+"% Done")
-                #     print("[+] Download Complete!")
-            else:
-                print("[-] File does not Exists")
+            except socket.timeout:
+                f.close
+                self.socket.close()
+                print("[+] File Downloaded")
+        else:
+            print("[-] File does not Exists")
             self.socket.close()
-
-        except KeyboardInterrupt as e:
-            # If a user turns the server off due to KeyboardInterrupt
-            socket.close()
-            return
 
     """
         calculate the number of chunks to be created
