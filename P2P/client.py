@@ -3,6 +3,10 @@ import sys
 import threading
 import os
 import time
+import io
+
+from pydub import AudioSegment
+from pydub.playback import play
 
 from .fileIO import FileIO
 from .music import Music
@@ -50,10 +54,7 @@ class Client:
             data, addr = self.socket.recvfrom(BUFFER_SIZE)
             print("[+] received packet %d from %s" % (int(data[:5].decode()), addr))
 
-            # create to work on a different thread to play music
-            i_thread = threading.Thread(target=self.play_music_on_download, args=f)
-            i_thread.daemon = False
-            i_thread.start()
+            buffer_data = data
 
 
             try:
@@ -61,8 +62,12 @@ class Client:
                     f.write(data[5:])
                     self.socket.settimeout(2)
                     data, addr = self.socket.recvfrom(BUFFER_SIZE)
+                    buffer_data += data
                     #print("received message: %s" % data)
                     print("[+] received packet %d from %s" % (int(data[:5].decode()), addr))
+                    if int(data[:5].decode()) >=100:
+                        self.play_music_on_download(buffer_data)
+
             except socket.timeout:
                 f.close
                 self.socket.close()
@@ -71,12 +76,24 @@ class Client:
             print("[-] File does not Exists")
             self.socket.close()
 
-    def play_music_on_download(self, filename):
-        print("sleep Play")
-        time.sleep(1) # sleep 5 seconds
-        print("Play................")
-        music = Music()
-        music.play_audio_segment(filename)
+    def play_music_on_download(self, bytes):
+        try:
+            print("len %d" % len(bytes))
+            #print("sleep Play")
+            #time.sleep(5) # sleep 5 seconds
+            print("Play................")
+
+            cwd = os.getcwd()
+            song = AudioSegment.from_file(io.BytesIO(bytes), format="mp3")
+            output = io.StringIO()
+            song.export(output, format="mp3", bitrate="192k")
+            converted_sound = AudioSegment.from_mp3(cwd + "/music/copy.mp3")
+            play(converted_sound)
+
+
+        except Exception as ex:
+            print(ex)
+            sys.exit()
 
     """
         calculate the number of chunks to be created

@@ -10,6 +10,7 @@ from .info import Info
 from .peer import Peer
 from .server import Server
 from .fileIO import FileIO
+from .music import Music
 from P2P.constants import *
 
 
@@ -46,7 +47,10 @@ def main():
                 ip, port = seeder.strip().split(':')
 
             Client(str(ip), int(port), filename)
-            #clientUDP.retr_file()
+            #music = Music()
+            #music.play_audio_segment()
+
+            #music.convert_to_music(preview)
 
     except Exception as ex:
         print(ex)

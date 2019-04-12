@@ -15,21 +15,22 @@ class Music:
     converted_sound = None
 
     cwd = os.getcwd()
-    song_path = cwd+"/music/song.mp3"
+    #song_path = cwd+"/music/song.mp3"
+    song_path = cwd + "/new_song.mp3"
 
-    def play_audio_segment(self, song_path):
-        sound = AudioSegment.from_mp3(song_path)
+    def play_audio_segment(self):
+        sound = AudioSegment.from_mp3(self.song_path)
         play(sound)
 
-    def convert(song=song_path):
-        sound = AudioSegment.from_mp3(song)
+    def convert(self):
+        sound = AudioSegment.from_mp3(self.song_path)
 
         # get the raw data
         raw_data = sound._data
 
         return raw_data
 
-    def convert_to_music(bytes):
+    def convert_to_music(self, bytes):
         song = AudioSegment.from_file(io.BytesIO(bytes), format="mp3")
         output = io.StringIO()
         song.export(output, format="mp3", bitrate="192k")
