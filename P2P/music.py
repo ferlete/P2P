@@ -8,6 +8,7 @@ from pydub.utils import mediainfo
 import os
 import io
 
+
 class Music:
 
     sound = None
@@ -15,6 +16,10 @@ class Music:
 
     cwd = os.getcwd()
     song_path = cwd+"/music/song.mp3"
+
+    def play_audio_segment(self, song_path):
+        sound = AudioSegment.from_mp3(song_path)
+        play(sound)
 
     def convert(song=song_path):
         sound = AudioSegment.from_mp3(song)
@@ -29,4 +34,5 @@ class Music:
         output = io.StringIO()
         song.export(output, format="mp3", bitrate="192k")
         converted_sound = AudioSegment.from_mp3(cwd + "/music/copy.mp3")
+        play(converted_sound)
         print("Done")

@@ -66,8 +66,9 @@ class Server:
         num_of_packet = int(self.calc_number_chunk(file_size))
         for i in range(num_of_packet):
             data = file.get_slice_file(filename, i)
+            new_data = bytes(self.make_header(i), encoding='utf8') + data
             print("[+] Sending packet %d to %s" % (i,client))
-            self.s.sendto(data, client)
+            self.s.sendto(new_data, client)
             time.sleep(.20)  #delay 20 miliseconds
 
     def run(self):
@@ -88,3 +89,6 @@ class Server:
         if (bytes % BLOCK_SIZE):
             noOfChunks += 1
         return noOfChunks
+
+    def make_header(self, packet_number):
+        return '%05d' % packet_number

@@ -16,5 +16,7 @@ REQUEST_SLICE = "SLICE:"
 BUFFER_SIZE = 1024
 SEQUENCIAL_POLICY = 'sequential'
 
+LEN_HEADER = 5 # Len header packet in bytes
+
 
 

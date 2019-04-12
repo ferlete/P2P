@@ -5,6 +5,7 @@ import os
 import time
 
 from .fileIO import FileIO
+from .music import Music
 from P2P.constants import *
 
 
@@ -39,20 +40,29 @@ class Client:
         request = GET_FILE_STRING + self.filename
         self.socket.sendto(request.encode(), self.server_address)
         data, server = self.socket.recvfrom(BUFFER_SIZE)
-        print(data.decode())
+        #print(data.decode())
         if data[:7].decode() == EXISTS_STRING:
             file_size = int(data[7:].decode())
             num_of_packet = int(self.calc_number_chunk(file_size))
             request = DOWNLOAD_STRING + self.filename
             self.socket.sendto(request.encode(), self.server_address)
-            f = open(self.filename+".dow", 'wb')
+            f = open("new_" + self.filename, 'wb')
             data, addr = self.socket.recvfrom(BUFFER_SIZE)
+            print("[+] received packet %d from %s" % (int(data[:5].decode()), addr))
+
+            # create to work on a different thread to play music
+            i_thread = threading.Thread(target=self.play_music_on_download, args=f)
+            i_thread.daemon = False
+            i_thread.start()
+
+
             try:
                 while(data):
-                    f.write(data)
+                    f.write(data[5:])
                     self.socket.settimeout(2)
                     data, addr = self.socket.recvfrom(BUFFER_SIZE)
-                    print("received message: %s" % data)
+                    #print("received message: %s" % data)
+                    print("[+] received packet %d from %s" % (int(data[:5].decode()), addr))
             except socket.timeout:
                 f.close
                 self.socket.close()
@@ -60,6 +70,13 @@ class Client:
         else:
             print("[-] File does not Exists")
             self.socket.close()
+
+    def play_music_on_download(self, filename):
+        print("sleep Play")
+        time.sleep(1) # sleep 5 seconds
+        print("Play................")
+        music = Music()
+        music.play_audio_segment(filename)
 
     """
         calculate the number of chunks to be created
