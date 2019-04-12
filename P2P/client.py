@@ -59,7 +59,7 @@ class Client:
             self.buffer_data = data # buffer for play
 
             # create to work on a different thread for play audio on download
-            t = threading.Timer(5.0, self.play_music_on_download)
+            t = threading.Timer(3.0, self.play_music_on_download)
             t.start()
 
             try:
@@ -84,7 +84,7 @@ class Client:
             cwd = os.getcwd()
             filename = "/music/song.mp3"
             path_to_file = cwd + filename
-            buffer_play = 4096*128
+            buffer_play = 4096*32
 
             print("Buffering... wait %d bytes" % buffer_play)
             while len(self.buffer_data) <= buffer_play:
@@ -99,8 +99,8 @@ class Client:
             #     frame_rate=44100,
             #     # stereo
             #     channels=2).set_frame_rate(16000)
-            #Reproduz os 15 primeiros segundos
-            seg = AudioSegment.from_file(io.BytesIO(self.buffer_data[:15*1000]), format="mp3")
+            #Reproduz os 5 primeiros segundos
+            seg = AudioSegment.from_file(io.BytesIO(self.buffer_data[:5*1000]), format="mp3")
 
             print("Information:")
             print("Channels:", seg.channels)
