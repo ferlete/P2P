@@ -4,6 +4,8 @@ import threading
 import os
 import time
 import io
+import numpy as np
+
 
 from pydub import AudioSegment
 from pydub.playback import play
@@ -28,7 +30,7 @@ class Client:
             self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
             # Connect the socket to the port where the server is listening
-            print('[+] connecting to %s:%s' % self.server_address)
+            print('[+] Connecting to %s:%s' % self.server_address)
             self.socket.connect(self.server_address)
 
             # create to work on a different thread
@@ -41,7 +43,8 @@ class Client:
         sys.exit()
 
     def retr_file(self):
-        print("[+] resquest filename %s" % self.filename)
+        current_packet = 0
+        print("[+] Resquest filename %s" % self.filename)
         request = GET_FILE_STRING + self.filename
         self.socket.sendto(request.encode(), self.server_address)
         data, server = self.socket.recvfrom(BUFFER_SIZE)
@@ -51,24 +54,28 @@ class Client:
             num_of_packet = int(self.calc_number_chunk(file_size))
             request = DOWNLOAD_STRING + self.filename
             self.socket.sendto(request.encode(), self.server_address)
-            f = open("new_" + self.filename, 'wb')
+            new_filename = "new_" + self.filename
+            f = open(new_filename, 'wb')
             data, addr = self.socket.recvfrom(BUFFER_SIZE)
-            print("[+] received packet %d from %s" % (int(data[:5].decode()), addr))
-
-
+            #print("[+] Received packet %d from seeder %s" % (int(data[:5].decode()), addr))
+            print("[+] Receiving filename %s from % s" % (self.filename, addr))
             self.buffer_data = data # buffer for play
 
             # create to work on a different thread for play audio on download
-            t = threading.Timer(3.0, self.play_music_on_download)
+            t = threading.Timer(1.0, self.play_music_on_download, args=[new_filename])
             t.start()
 
             try:
                 while(data):
+                    if current_packet != int(data[:5].decode()):
+                        print("[-] Packet %d out of order" % int(current_packet))
+                        sys.exit()
                     f.write(data[5:])
                     self.socket.settimeout(2)
                     data, addr = self.socket.recvfrom(BUFFER_SIZE)
                     self.buffer_data += data[5:]
-                    #print("[+] received packet %d from %s" % (int(data[:5].decode()), addr))
+                    current_packet += 1
+                    #print("[+] Received packet %d from seeder %s" % (int(data[:5].decode()), addr))
 
             except socket.timeout:
                 f.close
@@ -78,19 +85,16 @@ class Client:
             print("[-] File does not Exists")
             self.socket.close()
 
-    def play_music_on_download(self):
+    def play_music_on_download(self, new_filename):
         try:
+            # wait for 256Kb for play audio
+            buffer_play = int(256 * kilobyte)
 
-            cwd = os.getcwd()
-            filename = "/music/song.mp3"
-            path_to_file = cwd + filename
-            buffer_play = 4096*32
-
-            print("Buffering... wait %d bytes" % buffer_play)
+            print("[+] Buffering... wait %d bytes" % buffer_play)
             while len(self.buffer_data) <= buffer_play:
                 pass
 
-            print("Play Buffer..........")
+            print("[+] Play Buffer")
             # seg = AudioSegment(  # raw audio data (bytes)
             #     data=raw_data,
             #     # 2 byte (16 bit) samples
@@ -99,22 +103,26 @@ class Client:
             #     frame_rate=44100,
             #     # stereo
             #     channels=2).set_frame_rate(16000)
-            #Reproduz os 5 primeiros segundos
-            seg = AudioSegment.from_file(io.BytesIO(self.buffer_data[:5*1000]), format="mp3")
-
-            print("Information:")
-            print("Channels:", seg.channels)
-            print("Bits per sample:", seg.sample_width * 8)
-            print("Sampling frequency:", seg.frame_rate)
+            seg = AudioSegment.from_file(io.BytesIO(self.buffer_data), format="mp3")
+            #
+            # print("Information:")
+            # print("Channels:", seg.channels)
+            # print("Bits per sample:", seg.sample_width * 8)
+            # print("Sampling frequency:", seg.frame_rate)
             print("Length:", seg.duration_seconds, "seconds") # da para fazer um calculo de quando segundos baixou para
-            #saber a taxa de perda e pacotes reproduzidos
+            # #saber a taxa de perda e pacotes reproduzidos
+            #
 
             play(seg) # toca  segmento
+
 
 
         except Exception as ex:
             print(ex)
             sys.exit()
+
+    def _play(self, segment):
+        play(segment)
 
     """
         calculate the number of chunks to be created

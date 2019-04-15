@@ -65,19 +65,50 @@ class Server:
 
     def send_file_sequencial(self, filename, client):
         try:
-            file = FileIO(self.music_folder, self.block_size)
-            file_size = file.get_file_size(filename)
-            num_of_packet = int(self.calc_number_chunk(file_size))
-            for i in range(num_of_packet):
-                data = file.get_slice_file(filename, i)
-                new_data = bytes(self.make_header(i), encoding='utf8') + data
-                print("[+] Sending packet %d to %s" % (i,client))
-                self.s.sendto(new_data, client)
-                time.sleep(.1)  #delay 20 miliseconds
+            print("[+] Sending file %s to Leecher %s" % (filename, client))
+            packet = 0
+            filename = CURRENT_DIR + MUSIC_FOLDER + filename
+            f = open(filename, "rb")
+            data = f.read(BLOCK_SIZE)
+            while data:
+                new_data = bytes(self.make_header(packet), encoding='utf8') + data
+                if self.s.sendto(new_data, client):
+                    #print("[+] Sending packet %d to %s" % (packet, client))
+                    data = f.read(BLOCK_SIZE)
+                    time.sleep(0.02)  # Give receiver a bit time to save
+                packet += 1
+
+            self.s.close()
+            f.close()
+
+            # Esta fazendo assim mas a funcao seek nao esta lendo corretamente os blocos no disco ou calculo errado
+            # com isso na hora de reproduzir o audio no cliente deu erro
+            # file = FileIO(self.music_folder, self.block_size)
+            # file_size = file.get_file_size(filename)
+            # print("FIlesize %d " % file_size)
+            # num_of_packet = int(self.calc_number_chunk(file_size))
+            # print("num_of_packet %d " % num_of_packet)
+            # for i in range(num_of_packet):
+            #     packet = i
+            #     if self.loss_simulation(packet):
+            #        continue
+            #     data = file.get_slice_file(filename, i)
+            #     new_data = bytes(self.make_header(i), encoding='utf8') + data
+            #     #print("[+] Sending packet %d to %s" % (i,client))
+            #     self.s.sendto(new_data, client)
+            #     time.sleep(.1)  #delay 20 miliseconds
         except Exception as ex:
             print(ex)
         except KeyboardInterrupt:
             self.s.close()
+
+    def loss_simulation(self, packet):
+        return False
+        # if (packet % 200) == 0:
+        #     print("[-] loss simulation to packet %d " % packet)
+        #     return True
+        # else:
+        #     return False
 
     def run(self):
         try:
@@ -103,5 +134,8 @@ class Server:
             noOfChunks += 1
         return noOfChunks
 
+    """
+        generate header with packet number
+    """
     def make_header(self, packet_number):
         return '%05d' % packet_number
