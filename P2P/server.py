@@ -67,7 +67,11 @@ class Server:
         try:
             print("[+] Sending file %s to Leecher %s" % (filename, client))
             packet = 0
+            file = FileIO(MUSIC_FOLDER, BLOCK_SIZE)
+            total_packet = file.get_num_packet(filename)
+
             filename = CURRENT_DIR + MUSIC_FOLDER + filename
+
             f = open(filename, "rb")
             data = f.read(BLOCK_SIZE)
             while data:
@@ -75,28 +79,13 @@ class Server:
                 if self.s.sendto(new_data, client):
                     #print("[+] Sending packet %d to %s" % (packet, client))
                     data = f.read(BLOCK_SIZE)
-                    time.sleep(0.02)  # Give receiver a bit time to save
+                    time.sleep(0.010)  # Give receiver a bit time to save
+                    self.printProgressBar(packet + 1, total_packet, prefix='[+] Progress:', suffix='Complete', length=50)
                 packet += 1
 
             self.s.close()
             f.close()
 
-            # Esta fazendo assim mas a funcao seek nao esta lendo corretamente os blocos no disco ou calculo errado
-            # com isso na hora de reproduzir o audio no cliente deu erro
-            # file = FileIO(self.music_folder, self.block_size)
-            # file_size = file.get_file_size(filename)
-            # print("FIlesize %d " % file_size)
-            # num_of_packet = int(self.calc_number_chunk(file_size))
-            # print("num_of_packet %d " % num_of_packet)
-            # for i in range(num_of_packet):
-            #     packet = i
-            #     if self.loss_simulation(packet):
-            #        continue
-            #     data = file.get_slice_file(filename, i)
-            #     new_data = bytes(self.make_header(i), encoding='utf8') + data
-            #     #print("[+] Sending packet %d to %s" % (i,client))
-            #     self.s.sendto(new_data, client)
-            #     time.sleep(.1)  #delay 20 miliseconds
         except Exception as ex:
             print(ex)
         except KeyboardInterrupt:
@@ -139,3 +128,26 @@ class Server:
     """
     def make_header(self, packet_number):
         return '%05d' % packet_number
+
+    """ 
+        Print iterations progress
+    """
+    def printProgressBar(self, iteration, total, prefix='', suffix='', decimals=1, length=100, fill='█'):
+        """
+        Call in a loop to create terminal progress bar
+        @params:
+            iteration   - Required  : current iteration (Int)
+            total       - Required  : total iterations (Int)
+            prefix      - Optional  : prefix string (Str)
+            suffix      - Optional  : suffix string (Str)
+            decimals    - Optional  : positive number of decimals in percent complete (Int)
+            length      - Optional  : character length of bar (Int)
+            fill        - Optional  : bar fill character (Str)
+        """
+        percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
+        filledLength = int(length * iteration // total)
+        bar = fill * filledLength + '-' * (length - filledLength)
+        print('\r%s |%s| %s%% %s' % (prefix, bar, percent, suffix), end = '\r')
+        # Print New Line on Complete
+        if iteration == total:
+            print()

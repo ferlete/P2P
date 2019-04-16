@@ -24,6 +24,10 @@ class FileIO:
         f.close()
         return data
 
+    def get_num_packet(self, filename):
+        sizefile = self.get_file_size(filename)
+        return self.calc_number_chunk(sizefile)
+
     def get_slice_file(self, filename, slice):
         sizefile = self.get_file_size(filename)
         num_chunk = self.calc_number_chunk(sizefile)
