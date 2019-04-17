@@ -7,6 +7,7 @@ import io
 import numpy as np
 
 
+from datetime import datetime
 from pydub import AudioSegment
 from pydub.playback import play
 
@@ -17,10 +18,13 @@ from P2P.constants import *
 
 class Client:
 
-
     def __init__(self, ip, port, filename):
         self.filename = filename
         self.server_address = (ip, port)
+        self.packet = [] # array with packet lost or received
+        self.packet_send_time = []  # array with timestamp packet send
+        self.packet_received_time = [] # array with timestamp packet received
+        self.num_of_packet = 0
         try:
 
             # Create a UDP socket
@@ -38,20 +42,24 @@ class Client:
             i_thread.daemon = False
             i_thread.start()
 
+
         except Exception as e:
             print(e)
         sys.exit()
 
     def retr_file(self):
-        current_packet = 0
         print("[+] Resquest filename %s" % self.filename)
         request = GET_FILE_STRING + self.filename
         self.socket.sendto(request.encode(), self.server_address)
         data, server = self.socket.recvfrom(BUFFER_SIZE)
-        #print(data.decode())
         if data[:7].decode() == EXISTS_STRING:
             file_size = int(data[7:].decode())
-            num_of_packet = int(self.calc_number_chunk(file_size))
+
+            self.num_of_packet = int(self.calc_number_chunk(file_size))
+            self.packet = [False] * self.num_of_packet
+            self.packet_send_time =[None] * self.num_of_packet
+            self.packet_received_time = [None] * self.num_of_packet
+
             request = DOWNLOAD_STRING + self.filename
             self.socket.sendto(request.encode(), self.server_address)
             new_filename = "new_" + self.filename
@@ -62,28 +70,38 @@ class Client:
             self.buffer_data = data # buffer for play
 
             # create to work on a different thread for play audio on download
-            t = threading.Timer(1.0, self.play_music_on_download, args=[new_filename])
-            t.start()
+            #t = threading.Timer(1.0, self.play_music_on_download, args=[new_filename])
+            #t.start()
 
             try:
                 while(data):
-                    if current_packet != int(data[:5].decode()):
-                        print("[-] Packet %d out of order" % int(current_packet))
-                        sys.exit()
-                    f.write(data[5:])
-                    self.socket.settimeout(2)
+                    packet_id = int(data[:5].decode()) # five bytes for header
+                    ts = time.time()  # time stamp departure
+                    self.packet_send_time[packet_id] = ts
+                    f.write(data[5:]) # save in disk packet bytes
+                    self.socket.settimeout(1)
                     data, addr = self.socket.recvfrom(BUFFER_SIZE)
+                    self.packet[packet_id] = self.simulation_layer_loss_and_delay() # simulation delay and loss
+
+                    ts = time.time()  # time stamp arrival
+                    self.packet_received_time[packet_id] = ts
                     self.buffer_data += data[5:]
-                    current_packet += 1
                     #print("[+] Received packet %d from seeder %s" % (int(data[:5].decode()), addr))
 
             except socket.timeout:
                 f.close
                 self.socket.close()
                 print("[+] File Downloaded")
+                self.show_statistics()
         else:
             print("[-] File does not Exists")
             self.socket.close()
+
+    """
+        Esta funcao deve retornar um booleano indicando se pacote chegou o foi perdido
+    """
+    def simulation_layer_loss_and_delay(self):
+        return True
 
     def play_music_on_download(self, new_filename):
         try:
@@ -121,9 +139,6 @@ class Client:
             print(ex)
             sys.exit()
 
-    def _play(self, segment):
-        play(segment)
-
     """
         calculate the number of chunks to be created
     """
@@ -132,3 +147,16 @@ class Client:
         if (bytes % BLOCK_SIZE):
             noOfChunks += 1
         return noOfChunks
+
+    def show_statistics(self):
+        print(30*"-"+"Statistics"+30*"-")
+        print("Total of packet %d" % self.num_of_packet)
+        # using enumerate() + list comprehension
+        # to return true indices.
+        res = [i for i, val in enumerate(self.packet) if val]
+        #print("The list indices having True values are : " + str(res))
+        print("Num Packet received: %d" % len(res))
+        lost = self.num_of_packet - len(res)
+        print("Num Packet lost %d" % lost)
+        #print("Time for First packet %s (s)" % str((self.packet_send_time[0]).strftime('%H:%M:%S')))
+        print("Time for last packet %s" % str(datetime.now()))

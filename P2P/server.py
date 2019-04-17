@@ -79,25 +79,17 @@ class Server:
                 if self.s.sendto(new_data, client):
                     #print("[+] Sending packet %d to %s" % (packet, client))
                     data = f.read(BLOCK_SIZE)
-                    time.sleep(0.010)  # Give receiver a bit time to save
-                    self.printProgressBar(packet + 1, total_packet, prefix='[+] Progress:', suffix='Complete', length=50)
+                    time.sleep(0.01)  # Give receiver a bit time to save
+                    self.printProgressBar(packet, total_packet-2, prefix='[+] Progress:', suffix='Complete', length=30)
                 packet += 1
 
-            self.s.close()
+            #self.s.close()
             f.close()
 
         except Exception as ex:
             print(ex)
         except KeyboardInterrupt:
             self.s.close()
-
-    def loss_simulation(self, packet):
-        return False
-        # if (packet % 200) == 0:
-        #     print("[-] loss simulation to packet %d " % packet)
-        #     return True
-        # else:
-        #     return False
 
     def run(self):
         try:
