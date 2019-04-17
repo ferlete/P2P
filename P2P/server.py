@@ -77,9 +77,8 @@ class Server:
             while data:
                 new_data = bytes(self.make_header(packet), encoding='utf8') + data
                 if self.s.sendto(new_data, client):
-                    #print("[+] Sending packet %d to %s" % (packet, client))
                     data = f.read(BLOCK_SIZE)
-                    time.sleep(0.01)  # Give receiver a bit time to save
+                    time.sleep(DELAY_FOR_SEND)  # Give receiver a bit time to send packet
                     self.printProgressBar(packet, total_packet-2, prefix='[+] Progress:', suffix='Complete', length=30)
                 packet += 1
 

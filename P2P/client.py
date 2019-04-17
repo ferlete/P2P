@@ -4,12 +4,13 @@ import threading
 import os
 import time
 import io
-import numpy as np
-
+import matplotlib.pyplot as plt
+import csv
 
 from datetime import datetime
 from pydub import AudioSegment
 from pydub.playback import play
+
 
 from .fileIO import FileIO
 from .music import Music
@@ -57,11 +58,15 @@ class Client:
 
             self.num_of_packet = int(self.calc_number_chunk(file_size))
             self.packet = [False] * self.num_of_packet
-            self.packet_send_time =[None] * self.num_of_packet
+            self.packet_send_time = [None] * self.num_of_packet
             self.packet_received_time = [None] * self.num_of_packet
 
             request = DOWNLOAD_STRING + self.filename
             self.socket.sendto(request.encode(), self.server_address)
+
+            filename_send_time = "send_time.log"
+            f_send = open(filename_send_time, 'w')
+
             new_filename = "new_" + self.filename
             f = open(new_filename, 'wb')
             data, addr = self.socket.recvfrom(BUFFER_SIZE)
@@ -76,20 +81,24 @@ class Client:
             try:
                 while(data):
                     packet_id = int(data[:5].decode()) # five bytes for header
-                    ts = time.time()  # time stamp departure
+                    ts = int(time.time())  # time stamp departure
                     self.packet_send_time[packet_id] = ts
+                    f_send.write(str(packet_id) + ':' + str(ts)+'\n')
+
                     f.write(data[5:]) # save in disk packet bytes
                     self.socket.settimeout(1)
                     data, addr = self.socket.recvfrom(BUFFER_SIZE)
                     self.packet[packet_id] = self.simulation_layer_loss_and_delay() # simulation delay and loss
 
-                    ts = time.time()  # time stamp arrival
+                    ts = int(round(time.time() * 1000))  # timestamp in ms arrival
                     self.packet_received_time[packet_id] = ts
                     self.buffer_data += data[5:]
                     #print("[+] Received packet %d from seeder %s" % (int(data[:5].decode()), addr))
 
             except socket.timeout:
                 f.close
+                f_send.close()
+
                 self.socket.close()
                 print("[+] File Downloaded")
                 self.show_statistics()
@@ -154,9 +163,29 @@ class Client:
         # using enumerate() + list comprehension
         # to return true indices.
         res = [i for i, val in enumerate(self.packet) if val]
-        #print("The list indices having True values are : " + str(res))
         print("Num Packet received: %d" % len(res))
         lost = self.num_of_packet - len(res)
         print("Num Packet lost %d" % lost)
-        #print("Time for First packet %s (s)" % str((self.packet_send_time[0]).strftime('%H:%M:%S')))
-        print("Time for last packet %s" % str(datetime.now()))
+        
+
+    def plot_grafic(self):
+        x = []
+        y = []
+
+        with open('send_time.log', 'r') as csvfile:
+            plots = csv.reader(csvfile, delimiter=':')
+
+        for row in plots:
+            if int(row[1]) % 50 == 0:
+                x.append(int(row[1]))
+                ts = int(row[0])
+                y.append(datetime.utcfromtimestamp(ts).strftime('%S'))
+
+        plt.plot(x, y, marker='.')
+
+        plt.title('Send time packets')
+
+        plt.xlabel('Time')
+        plt.ylabel('Packet')
+
+        plt.show()
