@@ -96,7 +96,7 @@ class Client:
                 print("[+] File Downloaded")
                 self.save_log_received()
                 self.show_statistics()
-                self.plot_grafic()
+                self.plot_grafic_times()
         else:
             print("[-] File does not Exists")
             self.socket.close()
@@ -200,6 +200,9 @@ class Client:
         ax2.set_xlabel('Time')
         ax2.set_ylabel('Packet')
         ax2.set_title('Received')
+
+        plt.show()
+
 
     def plot_grafic_times(self):
         x, y, z = np.loadtxt('time.log', comments='#', delimiter=':', unpack=True)
