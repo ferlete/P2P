@@ -18,7 +18,7 @@ def main():
     default_port = 9999
     server_ip = '127.0.0.1'
     info = Info('authors', 'ferlete@gmail.com', 'P2P FACOM')
-    policy = 'sequential'
+    policy = SEQUENCIAL_POLICY
 
     parser = argparse.ArgumentParser(description=info.get_app_name())
     parser.add_argument('--type', '-t', dest="type", help='choice server or client',
@@ -31,13 +31,13 @@ def main():
 
     args = parser.parse_args()
     if args.policy == 'randon':
-        policy = 'randon'
+        policy = RANDON_POLICY
 
     try:
 
         if args.type == 'server':
             # start server
-            Server(server_ip, args.port, MUSIC_FOLDER, BLOCK_SIZE, policy)
+            Server(server_ip, args.port, policy)
 
         if args.type == 'client':
             filename = input('Informe nome do arquivo: ')
@@ -47,10 +47,6 @@ def main():
                 ip, port = seeder.strip().split(':')
 
             Client(str(ip), int(port), filename)
-            #music = Music()
-            #music.play_audio_segment()
-
-            #music.convert_to_music(preview)
 
     except Exception as ex:
         print(ex)

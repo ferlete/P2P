@@ -1,5 +1,7 @@
 import os, sys
+from array import array
 
+from P2P.constants import *
 
 class FileIO:
 
@@ -23,14 +25,25 @@ class FileIO:
             data = f.read()
         f.close()
         return data
+    def get_file_array(self, filename):
+        data = array('B')
+
+        with open(self.get_path(filename), 'rb') as f:
+            data.fromfile(f, self.get_file_size(filename))
+
+        examples = [data[s:s + self.block_size] for s in range(0, self.get_file_size(filename), self.block_size)]
+
+        return examples
+
 
     def get_num_packet(self, filename):
         sizefile = self.get_file_size(filename)
         return self.calc_number_chunk(sizefile)
 
     def get_slice_file(self, filename, slice):
+        # TODO bug correction
         sizefile = self.get_file_size(filename)
-        num_chunk = self.calc_number_chunk(sizefile)
+        #num_chunk = self.calc_number_chunk(sizefile)
         pos = (slice * self.block_size)
         with open(self.get_path(filename), 'rb') as f:
             f.seek(pos, 0)

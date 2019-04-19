@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="200c6840-be56-4904-abb0-0e1b02bd1f38" name="Default" comment="buffering and play">
+    <list default="true" id="200c6840-be56-4904-abb0-0e1b02bd1f38" name="Default" comment="Save log time, send and received">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/P2P/client.py" beforeDir="false" afterPath="$PROJECT_DIR$/P2P/client.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/P2P/constants.py" beforeDir="false" afterPath="$PROJECT_DIR$/P2P/constants.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/P2P/fileIO.py" beforeDir="false" afterPath="$PROJECT_DIR$/P2P/fileIO.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/P2P/p2p.py" beforeDir="false" afterPath="$PROJECT_DIR$/P2P/p2p.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/P2P/server.py" beforeDir="false" afterPath="$PROJECT_DIR$/P2P/server.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/new_song.mp3" beforeDir="false" afterPath="$PROJECT_DIR$/new_song.mp3" afterDir="false" />
     </list>
@@ -19,8 +21,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/P2P/p2p.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="420">
-              <caret line="39" column="65" selection-start-line="39" selection-start-column="65" selection-end-line="39" selection-end-column="65" />
+            <state relative-caret-position="669">
+              <caret line="45" column="39" lean-forward="true" selection-start-line="45" selection-start-column="39" selection-end-line="45" selection-end-column="39" />
               <folding>
                 <element signature="e#21#36#0" expanded="true" />
               </folding>
@@ -31,11 +33,17 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/P2P/server.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-216">
-              <caret line="78" column="51" selection-start-line="78" selection-start-column="51" selection-end-line="78" selection-end-column="51" />
-              <folding>
-                <element signature="e#0#30#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="120">
+              <caret line="8" selection-start-line="8" selection-end-line="8" selection-end-column="27" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/teste.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state>
+              <caret selection-end-column="13" />
             </state>
           </provider>
         </entry>
@@ -43,29 +51,20 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/P2P/fileIO.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="195">
-              <caret line="28" column="14" selection-start-line="28" selection-start-column="14" selection-end-line="28" selection-end-column="14" />
+            <state relative-caret-position="495">
+              <caret line="33" column="8" selection-start-line="33" selection-start-column="8" selection-end-line="33" selection-end-column="8" />
+              <folding>
+                <element signature="e#0#14#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/P2P/constants.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="285">
-              <caret line="19" column="14" selection-start-line="19" selection-end-line="19" selection-end-column="14" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/P2P/teste.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="45">
-              <caret line="3" column="31" selection-start-line="3" selection-start-column="31" selection-end-line="3" selection-end-column="31" />
-              <folding>
-                <element signature="e#0#19#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="120">
+              <caret line="8" column="20" selection-start-line="8" selection-start-column="17" selection-end-line="8" selection-end-column="20" />
             </state>
           </provider>
         </entry>
@@ -83,22 +82,22 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/p2p-runner.py">
+        <entry file="file://$PROJECT_DIR$/P2P/client.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="45">
-              <caret line="3" column="5" selection-start-line="3" selection-start-column="5" selection-end-line="3" selection-end-column="5" />
+            <state relative-caret-position="1764">
+              <caret line="209" column="35" lean-forward="true" selection-start-line="209" selection-start-column="35" selection-end-line="209" selection-end-column="35" />
+              <folding>
+                <element signature="e#0#13#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/P2P/client.py">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/time.log">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="429">
-              <caret line="168" column="8" selection-start-line="168" selection-start-column="8" selection-end-line="168" selection-end-column="8" />
-              <folding>
-                <element signature="e#0#13#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="425">
+              <caret line="7550" selection-start-line="7550" selection-end-line="7550" selection-end-column="25" />
             </state>
           </provider>
         </entry>
@@ -133,8 +132,19 @@
       <find>calc_number_chunk</find>
       <find>buffer_data</find>
       <find>rfind</find>
+      <find>None</find>
       <find>num_of_packet</find>
+      <find>:0</find>
+      <find>15555</find>
+      <find>music_folder</find>
+      <find>block_size</find>
+      <find>17061</find>
+      <find>filename</find>
     </findStrings>
+    <replaceStrings>
+      <replace>0</replace>
+      <replace>:10</replace>
+    </replaceStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -145,20 +155,22 @@
         <option value="$PROJECT_DIR$/server.py" />
         <option value="$PROJECT_DIR$/list_server.txt" />
         <option value="$PROJECT_DIR$/P2P/info.py" />
-        <option value="$PROJECT_DIR$/teste.py" />
         <option value="$PROJECT_DIR$/music/test.txt" />
         <option value="$PROJECT_DIR$/P2P/__init__.py" />
         <option value="$PROJECT_DIR$/music/teste.txt" />
         <option value="$PROJECT_DIR$/README.md" />
         <option value="$PROJECT_DIR$/P2P/peer.py" />
-        <option value="$PROJECT_DIR$/P2P/p2p.py" />
         <option value="$PROJECT_DIR$/P2P/music.py" />
         <option value="$PROJECT_DIR$/requeriments.txt" />
+        <option value="$PROJECT_DIR$/P2P/teste.py" />
+        <option value="$PROJECT_DIR$/send_time.log" />
+        <option value="$PROJECT_DIR$/time.log" />
+        <option value="$PROJECT_DIR$/P2P/client.py" />
+        <option value="$PROJECT_DIR$/teste.py" />
+        <option value="$PROJECT_DIR$/P2P/p2p.py" />
+        <option value="$PROJECT_DIR$/P2P/server.py" />
         <option value="$PROJECT_DIR$/P2P/fileIO.py" />
         <option value="$PROJECT_DIR$/P2P/constants.py" />
-        <option value="$PROJECT_DIR$/P2P/server.py" />
-        <option value="$PROJECT_DIR$/P2P/teste.py" />
-        <option value="$PROJECT_DIR$/P2P/client.py" />
       </list>
     </option>
   </component>
@@ -204,6 +216,7 @@
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/music" />
     </key>
   </component>
@@ -446,7 +459,21 @@
       <option name="project" value="LOCAL" />
       <updated>1555080642204</updated>
     </task>
-    <option name="localTasksCounter" value="25" />
+    <task id="LOCAL-00025" summary="Plot Grafic">
+      <created>1555515845274</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1555515845274</updated>
+    </task>
+    <task id="LOCAL-00026" summary="Save log time, send and received">
+      <created>1555687426862</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1555687426862</updated>
+    </task>
+    <option name="localTasksCounter" value="27" />
     <servers />
   </component>
   <component name="TodoView">
@@ -511,7 +538,9 @@
     <MESSAGE value="UDP" />
     <MESSAGE value="header packet" />
     <MESSAGE value="buffering and play" />
-    <option name="LAST_COMMIT_MESSAGE" value="buffering and play" />
+    <MESSAGE value="Plot Grafic" />
+    <MESSAGE value="Save log time, send and received" />
+    <option name="LAST_COMMIT_MESSAGE" value="Save log time, send and received" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/server.py" />
@@ -582,16 +611,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/P2P/p2p.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="420">
-          <caret line="39" column="65" selection-start-line="39" selection-start-column="65" selection-end-line="39" selection-end-column="65" />
-          <folding>
-            <element signature="e#21#36#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/music/teste.txt">
       <provider selected="true" editor-type-id="text-editor">
         <state>
@@ -606,60 +625,84 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/P2P/fileIO.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="195">
-          <caret line="28" column="14" selection-start-line="28" selection-start-column="14" selection-end-line="28" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file:///usr/share/applications/org.kde.kcalc.desktop">
       <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/P2P/constants.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="285">
-          <caret line="19" column="14" selection-start-line="19" selection-end-line="19" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/P2P/server.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-216">
-          <caret line="78" column="51" selection-start-line="78" selection-start-column="51" selection-end-line="78" selection-end-column="51" />
-          <folding>
-            <element signature="e#0#30#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/send_time.txt">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/send_time.log">
+    <entry file="file://$PROJECT_DIR$/new_teste.txt">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/received_time.log">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="6210">
-          <caret line="414" column="3" selection-start-line="414" selection-start-column="3" selection-end-line="414" selection-end-column="3" />
+        <state>
+          <caret column="20" selection-start-column="13" selection-end-column="20" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/P2P/teste.py">
+    <entry file="file://$PROJECT_DIR$/send_time.log">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="45">
-          <caret line="3" column="31" selection-start-line="3" selection-start-column="31" selection-end-line="3" selection-end-column="31" />
-          <folding>
-            <element signature="e#0#19#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="225">
+          <caret line="15" column="40" selection-start-line="15" selection-start-column="33" selection-end-line="15" selection-end-column="40" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/time.log">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="425">
+          <caret line="7550" selection-start-line="7550" selection-end-line="7550" selection-end-column="25" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/P2P/client.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="429">
-          <caret line="168" column="8" selection-start-line="168" selection-start-column="8" selection-end-line="168" selection-end-column="8" />
+        <state relative-caret-position="1764">
+          <caret line="209" column="35" lean-forward="true" selection-start-line="209" selection-start-column="35" selection-end-line="209" selection-end-column="35" />
           <folding>
             <element signature="e#0#13#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/P2P/p2p.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="669">
+          <caret line="45" column="39" lean-forward="true" selection-start-line="45" selection-start-column="39" selection-end-line="45" selection-end-column="39" />
+          <folding>
+            <element signature="e#21#36#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/teste.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/P2P/server.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="120">
+          <caret line="8" selection-start-line="8" selection-end-line="8" selection-end-column="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/P2P/fileIO.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="495">
+          <caret line="33" column="8" selection-start-line="33" selection-start-column="8" selection-end-line="33" selection-end-column="8" />
+          <folding>
+            <element signature="e#0#14#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/P2P/constants.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="120">
+          <caret line="8" column="20" selection-start-line="8" selection-start-column="17" selection-end-line="8" selection-end-column="20" />
         </state>
       </provider>
     </entry>

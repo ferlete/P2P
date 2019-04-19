@@ -2,6 +2,7 @@ import select, socket, sys, os
 import threading
 import numpy
 import time
+import random
 
 from .peer import Peer
 from .fileIO import FileIO
@@ -11,11 +12,9 @@ from P2P.constants import *
 class Server:
     connections = []
 
-    def __init__(self, ip, port, music_folder, block_size, policy):
+    def __init__(self, ip, port, policy):
         try:
             self.policy = policy
-            self.music_folder = music_folder
-            self.block_size = block_size
             self.filename = ''
             self.packet_send_time = []  # array with timestamp packet send
 
@@ -50,7 +49,7 @@ class Server:
                 # Request File
                 self.filename = udp_data[9:].decode('utf-8').strip()
                 print("[*] Leecher %s request filename: %s " % (client, self.filename))
-                file = FileIO(self.music_folder, self.block_size)
+                file = FileIO(MUSIC_FOLDER, BLOCK_SIZE)
                 if file.file_exists(self.filename):
                     response = EXISTS_STRING + str(file.get_file_size(self.filename))
                     self.s.sendto(response.encode('utf-8'), client)
@@ -61,8 +60,22 @@ class Server:
                 print("[*] Leecher {} request download".format(client))
                 if self.policy == SEQUENCIAL_POLICY:
                     self.send_file_sequencial(self.filename, client)
+                if self.policy == RANDON_POLICY:
+                    self.send_file_randon(self.filename,client)
         except Exception as ex:
             print(ex)
+
+    def send_file_randon(self, filename, client):
+        print("[+] Sending file %s to Leecher %s" % (filename, client))
+        packet_id = 0
+        file = FileIO(MUSIC_FOLDER, BLOCK_SIZE)
+        total_packet = int(file.get_num_packet(filename))
+        print(total_packet)
+        list = random.sample(range(0, total_packet), total_packet)
+        #print(lista)
+        data = file.get_file_array(filename)
+        print(data[0])
+
 
     def send_file_sequencial(self, filename, client):
         try:

@@ -6,6 +6,7 @@ import time
 import io
 import matplotlib.pyplot as plt
 import csv
+import numpy as np
 
 from datetime import datetime
 from pydub import AudioSegment
@@ -95,6 +96,7 @@ class Client:
                 print("[+] File Downloaded")
                 self.save_log_received()
                 self.show_statistics()
+                self.plot_grafic()
         else:
             print("[-] File does not Exists")
             self.socket.close()
@@ -108,6 +110,7 @@ class Client:
         for i, item in enumerate(data):
             if self.packet_received_time[int(i)] == None:
                 item.append(0)
+
             else:
                 item.append(self.packet_received_time[int(i)])
             new_data.append(item)
@@ -119,6 +122,7 @@ class Client:
         Esta funcao deve retornar um booleano indicando se pacote chegou o foi perdido
     """
     def simulation_layer_loss_and_delay(self):
+        time.sleep(DELAY_FOR_TO_RECEIVE)  # Give receiver a bit time to received packet
         return True
 
     def play_music_on_download(self, new_filename):
@@ -175,6 +179,40 @@ class Client:
         print("Num Packet lost %d" % lost)
 
     def plot_grafic(self):
-        plt.plotfile('send_time.log', delimiter=':', cols=(0, 1),
-                     names=('Time', 'Packet Number'), marker='.')
+        x, y, z = np.loadtxt('time.log', comments='#', delimiter=':', unpack=True)
+        # TODO mark missing packet in chart
+        # when the packet is lost the receiving time is matched with sending time
+        for i in x:
+            if z[int(i)] == 0:
+                z[int(i)] = y[int(i)]
+
+        fig = plt.figure()
+        ax1 = fig.add_subplot(1, 2, 1)
+        ax2 = fig.add_subplot(1, 2, 2)
+
+        ax1.plot(x, y, label='Transmitted', color='green')
+        ax2.plot(x, z, label='Received', color='red')
+
+        ax1.set_xlabel('Time')
+        ax1.set_ylabel('Packet')
+        ax1.set_title('Transmitted')
+
+        ax2.set_xlabel('Time')
+        ax2.set_ylabel('Packet')
+        ax2.set_title('Received')
+
+    def plot_grafic_times(self):
+        x, y, z = np.loadtxt('time.log', comments='#', delimiter=':', unpack=True)
+        # TODO mark missing packet in chart
+        # when the packet is lost the receiving time is matched with sending time
+        for i in x:
+            if z[int(i)] == 0:
+                z[int(i)] = y[int(i)]
+
+        plt.plot(x, y, label='transmitted', linewidth=1.0)
+        plt.plot(x, z, label='Received', linewidth=0.5)
+        plt.xlabel('Time')
+        plt.ylabel('Packet')
+        plt.title('Tradeoff')
+        plt.legend()
         plt.show()
