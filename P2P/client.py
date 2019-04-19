@@ -23,8 +23,7 @@ class Client:
         self.filename = filename
         self.server_address = (ip, port)
         self.packet = [] # array with packet lost or received
-        self.packet_send_time = []  # array with timestamp packet send
-        self.packet_received_time = [] # array with timestamp packet received
+        self.packet_received_time = []  # array with timestamp packet received
         self.num_of_packet = 0
         try:
 
@@ -57,15 +56,13 @@ class Client:
             file_size = int(data[7:].decode())
 
             self.num_of_packet = int(self.calc_number_chunk(file_size))
+            
             self.packet = [False] * self.num_of_packet
-            self.packet_send_time = [None] * self.num_of_packet
+            #self.packet_send_time = [None] * self.num_of_packet
             self.packet_received_time = [None] * self.num_of_packet
 
             request = DOWNLOAD_STRING + self.filename
             self.socket.sendto(request.encode(), self.server_address)
-
-            filename_send_time = "send_time.log"
-            f_send = open(filename_send_time, 'w')
 
             new_filename = "new_" + self.filename
             f = open(new_filename, 'wb')
@@ -81,30 +78,42 @@ class Client:
             try:
                 while(data):
                     packet_id = int(data[:5].decode()) # five bytes for header
-                    ts = int(time.time())  # time stamp departure
-                    self.packet_send_time[packet_id] = ts
-                    f_send.write(str(packet_id) + ':' + str(ts)+'\n')
-
                     f.write(data[5:]) # save in disk packet bytes
                     self.socket.settimeout(1)
                     data, addr = self.socket.recvfrom(BUFFER_SIZE)
                     self.packet[packet_id] = self.simulation_layer_loss_and_delay() # simulation delay and loss
 
-                    ts = int(round(time.time() * 1000))  # timestamp in ms arrival
+                    ts = time.time()  # timestamp in ms arrival
                     self.packet_received_time[packet_id] = ts
                     self.buffer_data += data[5:]
                     #print("[+] Received packet %d from seeder %s" % (int(data[:5].decode()), addr))
 
             except socket.timeout:
                 f.close
-                f_send.close()
 
                 self.socket.close()
                 print("[+] File Downloaded")
+                self.save_log_received()
                 self.show_statistics()
         else:
             print("[-] File does not Exists")
             self.socket.close()
+
+    def save_log_received(self):
+        filename_log_time = "time.log"
+        f_received = open(filename_log_time, 'r')
+        data = [item for item in csv.reader(f_received, delimiter=':')]
+        f_received.close()
+        new_data = []
+        for i, item in enumerate(data):
+            if self.packet_received_time[int(i)] == None:
+                item.append(0)
+            else:
+                item.append(self.packet_received_time[int(i)])
+            new_data.append(item)
+        f = open(filename_log_time, 'w')
+        csv.writer(f, delimiter=':').writerows(new_data)
+        f.close()
 
     """
         Esta funcao deve retornar um booleano indicando se pacote chegou o foi perdido
@@ -142,8 +151,6 @@ class Client:
 
             play(seg) # toca  segmento
 
-
-
         except Exception as ex:
             print(ex)
             sys.exit()
@@ -166,26 +173,8 @@ class Client:
         print("Num Packet received: %d" % len(res))
         lost = self.num_of_packet - len(res)
         print("Num Packet lost %d" % lost)
-        
 
     def plot_grafic(self):
-        x = []
-        y = []
-
-        with open('send_time.log', 'r') as csvfile:
-            plots = csv.reader(csvfile, delimiter=':')
-
-        for row in plots:
-            if int(row[1]) % 50 == 0:
-                x.append(int(row[1]))
-                ts = int(row[0])
-                y.append(datetime.utcfromtimestamp(ts).strftime('%S'))
-
-        plt.plot(x, y, marker='.')
-
-        plt.title('Send time packets')
-
-        plt.xlabel('Time')
-        plt.ylabel('Packet')
-
+        plt.plotfile('send_time.log', delimiter=':', cols=(0, 1),
+                     names=('Time', 'Packet Number'), marker='.')
         plt.show()

@@ -17,6 +17,7 @@ class Server:
             self.music_folder = music_folder
             self.block_size = block_size
             self.filename = ''
+            self.packet_send_time = []  # array with timestamp packet send
 
             #define a socket UDP
             self.s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -66,24 +67,28 @@ class Server:
     def send_file_sequencial(self, filename, client):
         try:
             print("[+] Sending file %s to Leecher %s" % (filename, client))
-            packet = 0
+            packet_id = 0
             file = FileIO(MUSIC_FOLDER, BLOCK_SIZE)
-            total_packet = file.get_num_packet(filename)
-
+            total_packet = int(file.get_num_packet(filename))            
             filename = CURRENT_DIR + MUSIC_FOLDER + filename
+
+            self.packet_send_time = [None] * total_packet
 
             f = open(filename, "rb")
             data = f.read(BLOCK_SIZE)
-            while data:
-                new_data = bytes(self.make_header(packet), encoding='utf8') + data
+            while data:                
+                new_data = bytes(self.make_header(packet_id), encoding='utf8') + data
                 if self.s.sendto(new_data, client):
+                    ts = time.time()  # time stamp departure
+                    self.packet_send_time[packet_id] = ts
                     data = f.read(BLOCK_SIZE)
                     time.sleep(DELAY_FOR_SEND)  # Give receiver a bit time to send packet
-                    self.printProgressBar(packet, total_packet-2, prefix='[+] Progress:', suffix='Complete', length=30)
-                packet += 1
+                    self.printProgressBar(packet_id, total_packet-1, prefix='[+] Progress:', suffix='Complete', length=60)
+                packet_id += 1
 
             #self.s.close()
             f.close()
+            self.save_log_send()
 
         except Exception as ex:
             print(ex)
@@ -104,6 +109,16 @@ class Server:
             print(ex)
         except KeyboardInterrupt:
             self.s.close()
+
+    """
+        save log time send packets
+    """
+    def save_log_send(self):
+        filename_send_time = "time.log"
+        f_send = open(filename_send_time, 'w')
+        for i in range(len(self.packet_send_time)):
+            f_send.write(str(i) + ':' + str(self.packet_send_time[i]) + '\n')
+        f_send.close()
 
     """
         calculate the number of chunks to be created

@@ -6,7 +6,7 @@ import os
 byte = 1
 kilobyte = byte * 1024
 megabyte = kilobyte * 1024
-BLOCK_SIZE = int(160 * byte)  # file block size in bytes
+BLOCK_SIZE = int(320 * byte)  # file block size in bytes
 
 CURRENT_DIR = os.getcwd()
 MUSIC_FOLDER = "/music/"
