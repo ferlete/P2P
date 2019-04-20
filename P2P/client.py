@@ -66,49 +66,44 @@ class Client:
             request = DOWNLOAD_STRING + self.filename
             self.socket.sendto(request.encode(), self.server_address)
 
-            #new_filename = "new_" + self.filename
-            #f = open(new_filename, 'wb')
             data, addr = self.socket.recvfrom(BUFFER_SIZE)
-            #print("[+] Received packet %d from seeder %s" % (int(data[:5].decode()), addr))
             print("[+] Receiving filename %s from % s" % (self.filename, addr))
-            #self.buffer_data[0] = data[5:] # buffer for play
+            packet_id = int(data[:5].decode())  # five bytes for header
+            self.buffer_data[packet_id] = data[5:] # buffer for play
 
             # create to work on a different thread for play audio on download
             #t = threading.Timer(1.0, self.play_music_on_download, args=[new_filename])
             #t.start()
-            
+
+
             #teste recebimento do primeiro pacote            
             #packet_id = int(data[:5].decode()) # five bytes for header
+            #self.buffer_data[packet_id] = data[5:]
+            #print("packet_id % d" % packet_id)
             #print(data[5:])
             #sys.exit()
             
 
             try:
                 while(data):
-                    packet_id = int(data[:5].decode()) # five bytes for header
-                    if packet_id == 0:
-                        print(data[5:])
-                    #f.write(data[5:]) # save in disk packet bytes
+
                     self.socket.settimeout(1)
                     data, addr = self.socket.recvfrom(BUFFER_SIZE)
                     self.packet[packet_id] = self.simulation_layer_loss_and_delay() # simulation delay and loss
 
+                    packet_id = int(data[:5].decode())  # five bytes for header
+
                     ts = time.time()  # timestamp in ms arrival
                     self.packet_received_time[packet_id] = ts
                     self.buffer_data[packet_id] = data[5:]
-                    #print("[+] Received packet %d from seeder %s" % (int(data[:5].decode()), addr))
-                    
-                    
 
             except socket.timeout:
-                #f.close
-
                 self.socket.close()
                 print("[+] File Downloaded")
                 self.save_audio_file()
                 self.save_log_received()
                 self.show_statistics()
-                #self.plot_grafic()
+                self.plot_grafic()
         else:
             print("[-] File does not Exists")
             self.socket.close()
@@ -116,13 +111,11 @@ class Client:
     def save_audio_file(self):
         new_filename = "new_" + self.filename
         f = open(new_filename, 'wb')
-        f.write(self.buffer_data[0]) # save in disk packet bytes
-        #for i in range(len(self.buffer_data)):
-        #    if self.buffer_data[i] != None:
-        #        f.write(self.buffer_data[i]) # save in disk packet bytes
+        for i in range(len(self.buffer_data)):
+            if self.buffer_data[i] != None:
+                f.write(self.buffer_data[i]) # save in disk packet bytes
         f.close()
-        
-        
+
     def save_log_received(self):
         filename_log_time = "time.log"
         f_received = open(filename_log_time, 'r')
@@ -132,7 +125,6 @@ class Client:
         for i, item in enumerate(data):
             if self.packet_received_time[int(i)] == None:
                 item.append(0)
-
             else:
                 item.append(self.packet_received_time[int(i)])
             new_data.append(item)
@@ -224,7 +216,6 @@ class Client:
         ax2.set_title('Received')
 
         plt.show()
-
 
     def plot_grafic_times(self):
         x, y, z = np.loadtxt('time.log', comments='#', delimiter=':', unpack=True)

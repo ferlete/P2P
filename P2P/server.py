@@ -84,7 +84,7 @@ class Server:
             #envia apenas o pacote[0] de 320 bits            
             #data = file.get_file_array(filename)
             #print(data[int(0)])
-            #print("send packet %d " % int(0))            
+            #print("send packet %d " % int(0))
             #new_data = bytes(self.make_header(0), encoding='utf8') + data[int(0)]
             #self.s.sendto(new_data, client)
             #ts = time.time()  # time stamp departure
@@ -92,10 +92,11 @@ class Server:
             #sys.exit()
             
             for packet_id in list_packets:
-                #print("send packet %d " % int(packet_id))            
-                if packet_id == 0:
-                    print("send packet %d " % int(packet_id))
-                    print(data[int(packet_id))
+                #print("send packet %d " % int(packet_id))
+                #if int(packet_id) == 0:
+                #    print("send packet %d " % int(packet_id))
+                #    print(data[int(packet_id)])
+                    #sys.exit()
                 new_data = bytes(self.make_header(packet_id), encoding='utf8') + data[int(packet_id)]
                 
                 if self.s.sendto(new_data, client):
@@ -168,14 +169,14 @@ class Server:
             f_send.write(str(i) + ':' + str(self.packet_send_time[i]) + '\n')
         f_send.close()
 
-    """
-        calculate the number of chunks to be created
-    """
-    def calc_number_chunk(self, bytes):
-        noOfChunks = int(bytes) / BLOCK_SIZE
-        if (bytes % BLOCK_SIZE):
-            noOfChunks += 1
-        return noOfChunks
+    # """
+    #     calculate the number of chunks to be created
+    # """
+    # def calc_number_chunk(self, bytes):
+    #     noOfChunks = int(bytes) / BLOCK_SIZE
+    #     if (bytes % BLOCK_SIZE):
+    #         noOfChunks += 1
+    #     return noOfChunks
 
     """
         generate header with packet number
