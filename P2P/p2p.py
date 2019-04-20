@@ -20,6 +20,7 @@ def main():
     default_ip = '192.168.25.7'
     info = Info('authors', 'ferlete@gmail.com', 'P2P FACOM')
     policy = SEQUENCIAL_POLICY
+    seeder_alive = []
 
     parser = argparse.ArgumentParser(description=info.get_app_name())
     parser.add_argument('--type', '-t', dest="type", help='choice server or client',
@@ -35,9 +36,6 @@ def main():
     if args.policy == RANDOM_POLICY:
         policy = RANDOM_POLICY
 
-    #if args.debug:
-    #    print("debug True")
-
     try:
 
         if args.type == 'server':
@@ -45,13 +43,24 @@ def main():
             Server(args.ip, args.port, policy)
 
         if args.type == 'client':
-            filename = input('Informe nome do arquivo: ')
+
             peer = Peer()
             for seeder in peer.get_list_seeder():
                 # print(seeder.strip())
                 ip, port = seeder.strip().split(':')
-            print("ip %s port %s" % (ip,port))
+                if peer.check_seeder_alive(str(ip), int(port)):
+                    seeder_alive.append(seeder)
 
+            if len(seeder_alive) == 0:
+                print("[-] P2P network does not have an active seeder. See file %s" % SEEDER_LIST)
+                sys.exit()
+            else:
+                print("[+] P2P seeders alive")
+                print(seeder_alive)
+
+            # connects to the first active seeder
+            ip, port = seeder_alive[0].strip().split(':')
+            filename = input('Informe nome do arquivo: ')
             Client(str(ip), int(port), filename, args.debug)
 
     except Exception as ex:

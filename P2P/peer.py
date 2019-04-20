@@ -1,6 +1,10 @@
 import socket
 import sys, os
 import threading
+import errno
+from socket import error as socket_error
+
+from P2P.constants import *
 
 
 class Peer:
@@ -43,4 +47,23 @@ class Peer:
         Check if seeder is active
     """
     def check_seeder_alive(self, ip, port):
-        pass
+        try:
+            server_address = (ip, port)
+
+            # Create a UDP socket
+            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+            # allow python to use recently closed socket
+            s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+
+            s.connect(server_address)
+            s.sendto(PING_REQUEST.encode(), server_address)
+            data, server = s.recvfrom(BUFFER_SIZE)
+            if data[:4].decode() == PONG_REQUEST:
+                return True
+            else:
+                return False
+
+        except socket_error as serr:
+            if serr.errno != errno.ECONNREFUSED:
+                return False

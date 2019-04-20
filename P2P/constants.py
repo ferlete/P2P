@@ -9,12 +9,16 @@ megabyte = kilobyte * 1024
 BLOCK_SIZE = int(320 * byte)  # file block size in bytes
 
 CURRENT_DIR = os.getcwd()
+FILENAME_LOG = CURRENT_DIR + "/time.log"
+SEEDER_LIST = "list_seeder.txt"
 MUSIC_FOLDER = "/music/"
 GET_FILE_STRING = "GET FILE:"
 DOWNLOAD_STRING = "DOWNLOAD FILE:"
 EXISTS_STRING = 'EXISTS:'
 NOT_FOUND_STRING = 'FILE NOT FOUND'
 REQUEST_SLICE = "SLICE:"
+PING_REQUEST = "PING"
+PONG_REQUEST = "PONG"
 BUFFER_SIZE = 1024
 SEQUENCIAL_POLICY = 'sequential'
 RANDOM_POLICY = 'random'

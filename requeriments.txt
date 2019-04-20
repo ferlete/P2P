@@ -2,4 +2,3 @@ pydub
 simpleaudio
 numpy
 matplotlib
-tkinter

@@ -8,15 +8,15 @@ from pydub.utils import mediainfo
 import os
 import io
 
+from P2P.constants import *
+
 
 class Music:
 
     sound = None
     converted_sound = None
 
-    cwd = os.getcwd()
-    #song_path = cwd+"/music/song.mp3"
-    song_path = cwd + "/new_song.mp3"
+    song_path = CURRENT_DIR + MUSIC_FOLDER + "/new_song.mp3"
 
     def play_audio_segment(self):
         sound = AudioSegment.from_mp3(self.song_path)

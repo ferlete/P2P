@@ -18,6 +18,7 @@ class Server:
         try:
             self.policy = policy
             self.filename = ''
+            self.filelog = FileIO()
             self.packet_send_time = []  # array with timestamp packet send
             self.progress = Progress()
 
@@ -52,7 +53,7 @@ class Server:
                 # Request File
                 self.filename = udp_data[9:].decode('utf-8').strip()
                 print("[*] Leecher %s request filename: %s " % (client, self.filename))
-                file = FileIO(MUSIC_FOLDER, BLOCK_SIZE)
+                file = FileIO()
                 if file.file_exists(self.filename):
                     response = EXISTS_STRING + str(file.get_file_size(self.filename))
                     self.s.sendto(response.encode('utf-8'), client)
@@ -66,6 +67,11 @@ class Server:
                     self.send_file_sequencial(self.filename, client)
                 if self.policy == RANDOM_POLICY:
                     self.send_file_randon(self.filename, client)
+
+            # "PING REQUEST:"
+            if udp_data[:4].decode('utf-8').strip() == PING_REQUEST:
+                self.s.sendto(PONG_REQUEST.encode('utf-8'), client)
+
         except Exception as ex:
             print(ex)
 
@@ -74,7 +80,7 @@ class Server:
             print("[+] Sending file %s to Leecher %s" % (filename, client))
             i = 0
             data = []  # binary data chunk file
-            file = FileIO(MUSIC_FOLDER, BLOCK_SIZE)
+            file = FileIO()
             total_packet = int(file.get_num_packet(filename))
 
             self.packet_send_time = [None] * total_packet
@@ -109,7 +115,7 @@ class Server:
                     self.progress.printProgressBar(i, total_packet - 1, prefix='[+] Progress:', suffix='Complete',
                                                    length=60)
                 i += 1
-            self.save_log_send()
+            self.filelog.save_log_send(self.packet_send_time)
 
         except Exception as ex:
             print(ex)
@@ -120,7 +126,7 @@ class Server:
         try:
             print("[+] Sending file %s to Leecher %s" % (filename, client))
             packet_id = 0
-            file = FileIO(MUSIC_FOLDER, BLOCK_SIZE)
+            file = FileIO()
             total_packet = int(file.get_num_packet(filename))
             filename = CURRENT_DIR + MUSIC_FOLDER + filename
 
@@ -141,7 +147,7 @@ class Server:
 
             # self.s.close()
             f.close()
-            self.save_log_send()
+            self.filelog.save_log_send(self.packet_send_time)
 
         except Exception as ex:
             print(ex)
@@ -162,17 +168,6 @@ class Server:
             print(ex)
         except KeyboardInterrupt:
             self.s.close()
-
-    """
-        save log time send packets
-    """
-
-    def save_log_send(self):
-        filename_send_time = "time.log"
-        f_send = open(filename_send_time, 'w')
-        for i in range(len(self.packet_send_time)):
-            f_send.write(str(i) + ':' + str(self.packet_send_time[i]) + '\n')
-        f_send.close()
 
     """
         generate header with packet number

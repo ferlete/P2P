@@ -5,7 +5,6 @@ import os
 import time
 import io
 import matplotlib.pyplot as plt
-import csv
 import numpy as np
 
 from datetime import datetime
@@ -29,6 +28,7 @@ class Client:
         self.buffer_data = []
         self.progress = Progress()
         self.debug = debug
+        self.logfile = FileIO()
         try:
 
             # Create a UDP socket
@@ -103,7 +103,7 @@ class Client:
                 print("[+] File Downloaded")
                 self.save_audio_file()
                 if self.debug:
-                    self.save_log_received()
+                    self.logfile.save_log_received(self.packet_received_time)
                     self.show_statistics()
                     self.plot_grafic_times()
         else:
@@ -111,31 +111,15 @@ class Client:
             self.socket.close()
 
     def save_audio_file(self):
-        new_filename = "new_" + self.filename
+        new_filename = CURRENT_DIR + MUSIC_FOLDER + "new_" + self.filename
         f = open(new_filename, 'wb')
         for i in range(len(self.buffer_data)):
             if self.buffer_data[i] != None:
                 f.write(self.buffer_data[i])  # save in disk packet bytes
         f.close()
 
-    def save_log_received(self):
-        filename_log_time = "time.log"
-        f_received = open(filename_log_time, 'r')
-        data = [item for item in csv.reader(f_received, delimiter=':')]
-        f_received.close()
-        new_data = []
-        for i, item in enumerate(data):
-            if self.packet_received_time[int(i)] == None:
-                item.append(0)
-            else:
-                item.append(self.packet_received_time[int(i)])
-            new_data.append(item)
-        f = open(filename_log_time, 'w')
-        csv.writer(f, delimiter=':').writerows(new_data)
-        f.close()
-
     """
-        Esta funcao deve retornar um booleano indicando se pacote chegou o foi perdido
+        Esta funcao deve retornar um booleano indicando se pacote chegou o foi perdido e aplicar delay
     """
 
     def simulation_layer_loss_and_delay(self):
