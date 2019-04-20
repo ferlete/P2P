@@ -7,6 +7,7 @@ import binascii
 
 from .peer import Peer
 from .fileIO import FileIO
+from .progress import Progress
 from P2P.constants import *
 
 
@@ -18,8 +19,9 @@ class Server:
             self.policy = policy
             self.filename = ''
             self.packet_send_time = []  # array with timestamp packet send
+            self.progress = Progress()
 
-            #define a socket UDP
+            # define a socket UDP
             self.s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             self.s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
@@ -56,86 +58,88 @@ class Server:
                     self.s.sendto(response.encode('utf-8'), client)
                 else:
                     self.s.sendto(NOT_FOUND_STRING.encode('utf-8'), client)
+            # "DOWNLOAD FILE:"
             if udp_data[:14].decode('utf-8').strip() == DOWNLOAD_STRING:
                 # Request download File
                 print("[*] Leecher {} request download".format(client))
                 if self.policy == SEQUENCIAL_POLICY:
                     self.send_file_sequencial(self.filename, client)
                 if self.policy == RANDOM_POLICY:
-                    self.send_file_randon(self.filename,client)
+                    self.send_file_randon(self.filename, client)
         except Exception as ex:
             print(ex)
 
     def send_file_randon(self, filename, client):
-        try:            
+        try:
             print("[+] Sending file %s to Leecher %s" % (filename, client))
             i = 0
-            data = [] # binary data chunk file
+            data = []  # binary data chunk file
             file = FileIO(MUSIC_FOLDER, BLOCK_SIZE)
-            total_packet = int(file.get_num_packet(filename))            
-            
+            total_packet = int(file.get_num_packet(filename))
+
             self.packet_send_time = [None] * total_packet
-            
+
             # list of packet random
             list_packets = random.sample(range(0, total_packet), total_packet)
-            
+
             data = file.get_file_array(filename)
-            
-            #envia apenas o pacote[0] de 320 bits            
-            #data = file.get_file_array(filename)
-            #print(data[int(0)])
-            #print("send packet %d " % int(0))
-            #new_data = bytes(self.make_header(0), encoding='utf8') + data[int(0)]
-            #self.s.sendto(new_data, client)
-            #ts = time.time()  # time stamp departure
-            #self.packet_send_time[0] = ts
-            #sys.exit()
-            
+
+            # envia apenas o pacote[0] de 320 bits
+            # data = file.get_file_array(filename)
+            # print(data[int(0)])
+            # print("send packet %d " % int(0))
+            # new_data = bytes(self.make_header(0), encoding='utf8') + data[int(0)]
+            # self.s.sendto(new_data, client)
+            # ts = time.time()  # time stamp departure
+            # self.packet_send_time[0] = ts
+            # sys.exit()
+
             for packet_id in list_packets:
-                #print("send packet %d " % int(packet_id))
-                #if int(packet_id) == 0:
+                # print("send packet %d " % int(packet_id))
+                # if int(packet_id) == 0:
                 #    print("send packet %d " % int(packet_id))
                 #    print(data[int(packet_id)])
-                    #sys.exit()
+                # sys.exit()
                 new_data = bytes(self.make_header(packet_id), encoding='utf8') + data[int(packet_id)]
-                
+
                 if self.s.sendto(new_data, client):
                     ts = time.time()  # time stamp departure
                     self.packet_send_time[packet_id] = ts
                     time.sleep(DELAY_FOR_SEND)  # Give receiver a bit time to send packet
-                    self.printProgressBar(i, total_packet-1, prefix='[+] Progress:', suffix='Complete', length=60)
+                    self.progress.printProgressBar(i, total_packet - 1, prefix='[+] Progress:', suffix='Complete',
+                                                   length=60)
                 i += 1
             self.save_log_send()
-        
+
         except Exception as ex:
             print(ex)
         except KeyboardInterrupt:
             self.s.close()
- 
 
     def send_file_sequencial(self, filename, client):
         try:
             print("[+] Sending file %s to Leecher %s" % (filename, client))
             packet_id = 0
             file = FileIO(MUSIC_FOLDER, BLOCK_SIZE)
-            total_packet = int(file.get_num_packet(filename))            
+            total_packet = int(file.get_num_packet(filename))
             filename = CURRENT_DIR + MUSIC_FOLDER + filename
 
             self.packet_send_time = [None] * total_packet
 
             f = open(filename, "rb")
             data = f.read(BLOCK_SIZE)
-            while data:                
+            while data:
                 new_data = bytes(self.make_header(packet_id), encoding='utf8') + data
                 if self.s.sendto(new_data, client):
                     ts = time.time()  # time stamp departure
                     self.packet_send_time[packet_id] = ts
                     data = f.read(BLOCK_SIZE)
                     time.sleep(DELAY_FOR_SEND)  # Give receiver a bit time to send packet
-                    self.printProgressBar(packet_id, total_packet-1, prefix='[+] Progress:', suffix='Complete', length=60)
+                    self.progress.printProgressBar(packet_id, total_packet - 1, prefix='[+] Progress:',
+                                                   suffix='Complete', length=60)
                 packet_id += 1
 
-            #self.s.close()
+            # self.s.close()
             f.close()
             self.save_log_send()
 
@@ -162,6 +166,7 @@ class Server:
     """
         save log time send packets
     """
+
     def save_log_send(self):
         filename_send_time = "time.log"
         f_send = open(filename_send_time, 'w')
@@ -169,40 +174,9 @@ class Server:
             f_send.write(str(i) + ':' + str(self.packet_send_time[i]) + '\n')
         f_send.close()
 
-    # """
-    #     calculate the number of chunks to be created
-    # """
-    # def calc_number_chunk(self, bytes):
-    #     noOfChunks = int(bytes) / BLOCK_SIZE
-    #     if (bytes % BLOCK_SIZE):
-    #         noOfChunks += 1
-    #     return noOfChunks
-
     """
         generate header with packet number
     """
+
     def make_header(self, packet_number):
         return '%05d' % packet_number
-
-    """ 
-        Print iterations progress
-    """
-    def printProgressBar(self, iteration, total, prefix='', suffix='', decimals=1, length=100, fill='█'):
-        """
-        Call in a loop to create terminal progress bar
-        @params:
-            iteration   - Required  : current iteration (Int)
-            total       - Required  : total iterations (Int)
-            prefix      - Optional  : prefix string (Str)
-            suffix      - Optional  : suffix string (Str)
-            decimals    - Optional  : positive number of decimals in percent complete (Int)
-            length      - Optional  : character length of bar (Int)
-            fill        - Optional  : bar fill character (Str)
-        """
-        percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
-        filledLength = int(length * iteration // total)
-        bar = fill * filledLength + '-' * (length - filledLength)
-        print('\r%s |%s| %s%% %s' % (prefix, bar, percent, suffix), end = '\r')
-        # Print New Line on Complete
-        if iteration == total:
-            print()

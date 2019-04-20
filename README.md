@@ -22,10 +22,10 @@ Install the dependencies and devDependencies and start the server.
 
 ```sh
 $ apt-get install ffmpeg
-$ pip3 install pydub
-$ mkdir P2P
-$ cd P2P
-$ git clone https://github.com/ferlete/P2P/P2P.git
+$ apt-get install python3-tk
+$ apt-get install python3-pip
+$ pip3 install -r requirements.txt
+$ git clone https://github.com/ferlete/P2P
 ```
 
 ### Run

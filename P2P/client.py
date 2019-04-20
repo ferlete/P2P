@@ -12,21 +12,23 @@ from datetime import datetime
 from pydub import AudioSegment
 from pydub.playback import play
 
-
 from .fileIO import FileIO
+from .progress import Progress
 from .music import Music
 from P2P.constants import *
 
 
 class Client:
 
-    def __init__(self, ip, port, filename):
+    def __init__(self, ip, port, filename, debug):
         self.filename = filename
         self.server_address = (ip, port)
-        self.packet = [] # array with packet lost or received
+        self.packet = []  # array with packet lost or received
         self.packet_received_time = []  # array with timestamp packet received
         self.num_of_packet = 0
         self.buffer_data = []
+        self.progress = Progress()
+        self.debug = debug
         try:
 
             # Create a UDP socket
@@ -58,8 +60,8 @@ class Client:
             file_size = int(data[7:].decode())
 
             self.num_of_packet = int(self.calc_number_chunk(file_size))
-            
-            self.packet = [False] * self.num_of_packet            
+
+            self.packet = [False] * self.num_of_packet
             self.packet_received_time = [None] * self.num_of_packet
             self.buffer_data = [None] * self.num_of_packet
 
@@ -69,29 +71,28 @@ class Client:
             data, addr = self.socket.recvfrom(BUFFER_SIZE)
             print("[+] Receiving filename %s from % s" % (self.filename, addr))
             packet_id = int(data[:5].decode())  # five bytes for header
-            self.buffer_data[packet_id] = data[5:] # buffer for play
+            self.buffer_data[packet_id] = data[5:]  # buffer for play
 
             # create to work on a different thread for play audio on download
-            #t = threading.Timer(1.0, self.play_music_on_download, args=[new_filename])
-            #t.start()
+            # t = threading.Timer(1.0, self.play_music_on_download, args=[new_filename])
+            # t.start()
 
-
-            #teste recebimento do primeiro pacote            
-            #packet_id = int(data[:5].decode()) # five bytes for header
-            #self.buffer_data[packet_id] = data[5:]
-            #print("packet_id % d" % packet_id)
-            #print(data[5:])
-            #sys.exit()
-            
+            # teste recebimento do primeiro pacote
+            # packet_id = int(data[:5].decode()) # five bytes for header
+            # self.buffer_data[packet_id] = data[5:]
+            # print("packet_id % d" % packet_id)
+            # print(data[5:])
+            # sys.exit()
 
             try:
-                while(data):
-
+                while (data):
                     self.socket.settimeout(1)
                     data, addr = self.socket.recvfrom(BUFFER_SIZE)
-                    self.packet[packet_id] = self.simulation_layer_loss_and_delay() # simulation delay and loss
+                    self.packet[packet_id] = self.simulation_layer_loss_and_delay()  # simulation delay and loss
 
                     packet_id = int(data[:5].decode())  # five bytes for header
+                    self.progress.printProgressBar(packet_id, self.num_of_packet - 1, prefix='[+] Progress:',
+                                                   suffix='Complete', length=60)
 
                     ts = time.time()  # timestamp in ms arrival
                     self.packet_received_time[packet_id] = ts
@@ -101,9 +102,10 @@ class Client:
                 self.socket.close()
                 print("[+] File Downloaded")
                 self.save_audio_file()
-                self.save_log_received()
-                self.show_statistics()
-                self.plot_grafic()
+                if self.debug:
+                    self.save_log_received()
+                    self.show_statistics()
+                    self.plot_grafic_times()
         else:
             print("[-] File does not Exists")
             self.socket.close()
@@ -113,7 +115,7 @@ class Client:
         f = open(new_filename, 'wb')
         for i in range(len(self.buffer_data)):
             if self.buffer_data[i] != None:
-                f.write(self.buffer_data[i]) # save in disk packet bytes
+                f.write(self.buffer_data[i])  # save in disk packet bytes
         f.close()
 
     def save_log_received(self):
@@ -135,6 +137,7 @@ class Client:
     """
         Esta funcao deve retornar um booleano indicando se pacote chegou o foi perdido
     """
+
     def simulation_layer_loss_and_delay(self):
         time.sleep(DELAY_FOR_TO_RECEIVE)  # Give receiver a bit time to received packet
         return True
@@ -163,11 +166,11 @@ class Client:
             # print("Channels:", seg.channels)
             # print("Bits per sample:", seg.sample_width * 8)
             # print("Sampling frequency:", seg.frame_rate)
-            print("Length:", seg.duration_seconds, "seconds") # da para fazer um calculo de quando segundos baixou para
+            print("Length:", seg.duration_seconds, "seconds")  # da para fazer um calculo de quando segundos baixou para
             # #saber a taxa de perda e pacotes reproduzidos
             #
 
-            play(seg) # toca  segmento
+            play(seg)  # toca  segmento
 
         except Exception as ex:
             print(ex)
@@ -176,6 +179,7 @@ class Client:
     """
         calculate the number of chunks to be created
     """
+
     def calc_number_chunk(self, bytes):
         noOfChunks = int(bytes) / BLOCK_SIZE
         if (bytes % BLOCK_SIZE):
@@ -183,7 +187,7 @@ class Client:
         return noOfChunks
 
     def show_statistics(self):
-        print(30*"-"+"Statistics"+30*"-")
+        print(30 * "-" + "Statistics" + 30 * "-")
         print("Total of packet %d" % self.num_of_packet)
         # using enumerate() + list comprehension
         # to return true indices.
