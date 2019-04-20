@@ -30,7 +30,6 @@ class Client:
         self.debug = debug
         self.logfile = FileIO()
         try:
-
             # Create a UDP socket
             self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
@@ -53,6 +52,7 @@ class Client:
 
     def retr_file(self):
         print("[+] Resquest filename %s" % self.filename)
+        i = 0
         request = GET_FILE_STRING + self.filename
         self.socket.sendto(request.encode(), self.server_address)
         data, server = self.socket.recvfrom(BUFFER_SIZE)
@@ -77,13 +77,6 @@ class Client:
             # t = threading.Timer(1.0, self.play_music_on_download, args=[new_filename])
             # t.start()
 
-            # teste recebimento do primeiro pacote
-            # packet_id = int(data[:5].decode()) # five bytes for header
-            # self.buffer_data[packet_id] = data[5:]
-            # print("packet_id % d" % packet_id)
-            # print(data[5:])
-            # sys.exit()
-
             try:
                 while (data):
                     self.socket.settimeout(1)
@@ -91,12 +84,13 @@ class Client:
                     self.packet[packet_id] = self.simulation_layer_loss_and_delay()  # simulation delay and loss
 
                     packet_id = int(data[:5].decode())  # five bytes for header
-                    self.progress.printProgressBar(packet_id, self.num_of_packet - 1, prefix='[+] Progress:',
+                    self.progress.printProgressBar(i, self.num_of_packet - 1, prefix='[+] Progress:',
                                                    suffix='Complete', length=60)
 
                     ts = time.time()  # timestamp in ms arrival
                     self.packet_received_time[packet_id] = ts
                     self.buffer_data[packet_id] = data[5:]
+                    i += 1
 
             except socket.timeout:
                 self.socket.close()
@@ -111,12 +105,15 @@ class Client:
             self.socket.close()
 
     def save_audio_file(self):
-        new_filename = CURRENT_DIR + MUSIC_FOLDER + "new_" + self.filename
-        f = open(new_filename, 'wb')
-        for i in range(len(self.buffer_data)):
-            if self.buffer_data[i] != None:
-                f.write(self.buffer_data[i])  # save in disk packet bytes
-        f.close()
+        try:
+            new_filename = CURRENT_DIR + MUSIC_FOLDER + "new_" + self.filename
+            f = open(new_filename, 'wb')
+            for i in range(len(self.buffer_data)):
+                if self.buffer_data[i] != None:
+                    f.write(self.buffer_data[i])  # save in disk packet bytes
+            f.close()
+        except Exception as ex:
+            print(ex)
 
     """
         Esta funcao deve retornar um booleano indicando se pacote chegou o foi perdido e aplicar delay
@@ -171,52 +168,62 @@ class Client:
         return noOfChunks
 
     def show_statistics(self):
-        print(30 * "-" + "Statistics" + 30 * "-")
-        print("Total of packet %d" % self.num_of_packet)
-        # using enumerate() + list comprehension
-        # to return true indices.
-        res = [i for i, val in enumerate(self.packet) if val]
-        print("Num Packet received: %d" % len(res))
-        lost = self.num_of_packet - len(res)
-        print("Num Packet lost %d" % lost)
+        try:
+            print(30 * "-" + "Statistics" + 30 * "-")
+            print("Total of packet %d" % self.num_of_packet)
+            # using enumerate() + list comprehension
+            # to return true indices.
+            res = [i for i, val in enumerate(self.packet) if val]
+            print("Num Packet received: %d" % len(res))
+            lost = self.num_of_packet - len(res)
+            print("Num Packet lost %d" % lost)
+        except Exception as ex:
+            print(ex)
 
     def plot_grafic(self):
-        x, y, z = np.loadtxt('time.log', comments='#', delimiter=':', unpack=True)
-        # TODO mark missing packet in chart
-        # when the packet is lost the receiving time is matched with sending time
-        for i in x:
-            if z[int(i)] == 0:
-                z[int(i)] = y[int(i)]
+        try:
+            x, y, z = np.loadtxt('time.log', comments='#', delimiter=':', unpack=True)
+            # TODO mark missing packet in chart
+            # when the packet is lost the receiving time is matched with sending time
+            for i in x:
+                if z[int(i)] == 0:
+                    z[int(i)] = y[int(i)]
 
-        fig = plt.figure()
-        ax1 = fig.add_subplot(1, 2, 1)
-        ax2 = fig.add_subplot(1, 2, 2)
+            fig = plt.figure()
+            ax1 = fig.add_subplot(1, 2, 1)
+            ax2 = fig.add_subplot(1, 2, 2)
 
-        ax1.plot(x, y, label='Transmitted', color='green')
-        ax2.plot(x, z, label='Received', color='red')
+            ax1.plot(x, y, label='Transmitted', color='green')
+            ax2.plot(x, z, label='Received', color='red')
 
-        ax1.set_xlabel('Time')
-        ax1.set_ylabel('Packet')
-        ax1.set_title('Transmitted')
+            ax1.set_xlabel('Time')
+            ax1.set_ylabel('Packet')
+            ax1.set_title('Transmitted')
 
-        ax2.set_xlabel('Time')
-        ax2.set_ylabel('Packet')
-        ax2.set_title('Received')
+            ax2.set_xlabel('Time')
+            ax2.set_ylabel('Packet')
+            ax2.set_title('Received')
 
-        plt.show()
+            plt.show()
+        except Exception as ex:
+            print(ex)
 
     def plot_grafic_times(self):
-        x, y, z = np.loadtxt('time.log', comments='#', delimiter=':', unpack=True)
-        # TODO mark missing packet in chart
-        # when the packet is lost the receiving time is matched with sending time
-        for i in x:
-            if z[int(i)] == 0:
-                z[int(i)] = y[int(i)]
+        try:
 
-        plt.plot(x, y, label='transmitted', linewidth=1.0)
-        plt.plot(x, z, label='Received', linewidth=0.5)
-        plt.xlabel('Time')
-        plt.ylabel('Packet')
-        plt.title('Tradeoff')
-        plt.legend()
-        plt.show()
+            x, y, z = np.loadtxt('time.log', comments='#', delimiter=':', unpack=True)
+            # TODO mark missing packet in chart
+            # when the packet is lost the receiving time is matched with sending time
+            for i in x:
+                if z[int(i)] == 0:
+                    z[int(i)] = y[int(i)]
+
+            plt.plot(x, y, label='transmitted', linewidth=1.0)
+            plt.plot(x, z, label='Received', linewidth=0.5)
+            plt.xlabel('Time')
+            plt.ylabel('Packet')
+            plt.title('Tradeoff')
+            plt.legend()
+            plt.show()
+        except Exception as ex:
+            print(ex)

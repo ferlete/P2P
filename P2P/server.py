@@ -90,16 +90,6 @@ class Server:
 
             data = file.get_file_array(filename)
 
-            # envia apenas o pacote[0] de 320 bits
-            # data = file.get_file_array(filename)
-            # print(data[int(0)])
-            # print("send packet %d " % int(0))
-            # new_data = bytes(self.make_header(0), encoding='utf8') + data[int(0)]
-            # self.s.sendto(new_data, client)
-            # ts = time.time()  # time stamp departure
-            # self.packet_send_time[0] = ts
-            # sys.exit()
-
             for packet_id in list_packets:
                 # print("send packet %d " % int(packet_id))
                 # if int(packet_id) == 0:
@@ -172,6 +162,5 @@ class Server:
     """
         generate header with packet number
     """
-
     def make_header(self, packet_number):
         return '%05d' % packet_number

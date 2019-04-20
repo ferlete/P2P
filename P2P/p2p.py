@@ -43,7 +43,7 @@ def main():
             Server(args.ip, args.port, policy)
 
         if args.type == 'client':
-
+            # get seeder alive
             peer = Peer()
             for seeder in peer.get_list_seeder():
                 # print(seeder.strip())
