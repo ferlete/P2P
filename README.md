@@ -2,16 +2,18 @@
 
 P2P Simulation
 
-  - Client and Server TCP and UDP P2P networdk
+  - Client and Server UDP P2P network
   - Music share
   - Playback on download
 
 # New Features!
 
-  - UDP Server Suporte
-  - TCP Server Suporte
-  - Split the file in part and send only the part that the client requests
-
+  - UDP server suport
+  - Sequential method
+  - Random method
+  - Show statistics
+  - Plot graphic
+  
 ### Installation
 
 P2P requires [ffmpeg](https://ffmpeg.org/download.html) to run.
@@ -28,19 +30,19 @@ $ git clone https://github.com/ferlete/P2P/P2P.git
 
 ### Run
 
-For run TCP server
+For run UDP server method sequential
 ```sh
 $ cd P2P 
-$ python3 p2p-runner.py -t server -p 8000 --tcp 
+$ python3 p2p-runner.py -t server -p 8000
 ```
 
-For run UDP server
+For run UDP server method random
 ```sh
 $ cd P2P 
-$ python3 p2p-runner.py -t server -p 8000 --udp 
+$ python3 p2p-runner.py -t server -p 8000 -m random
 ```
 
-For run TCP Client
+For run UDP Client
 ```sh
 $ cd P2P 
 $ python3 p2p-runner.py -t client 
