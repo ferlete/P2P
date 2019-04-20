@@ -30,8 +30,8 @@ def main():
     parser.add_argument('--debug', help='increase output verbosity')
 
     args = parser.parse_args()
-    if args.policy == 'randon':
-        policy = RANDON_POLICY
+    if args.policy == RANDOM_POLICY:
+        policy = RANDOM_POLICY
 
     try:
 

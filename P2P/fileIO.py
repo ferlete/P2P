@@ -1,5 +1,6 @@
 import os, sys
 from array import array
+import binascii
 
 from P2P.constants import *
 
@@ -25,15 +26,18 @@ class FileIO:
             data = f.read()
         f.close()
         return data
+    
     def get_file_array(self, filename):
-        data = array('B')
+        c = []
+        with open(self.get_path(filename), 'rb') as f:            
+            while True:
+                # Read block size chunks of the music
+                chunk = f.read(self.block_size)
+                c.append(chunk)
+                if not chunk: break
+        f.close()
 
-        with open(self.get_path(filename), 'rb') as f:
-            data.fromfile(f, self.get_file_size(filename))
-
-        examples = [data[s:s + self.block_size] for s in range(0, self.get_file_size(filename), self.block_size)]
-
-        return examples
+        return c
 
 
     def get_num_packet(self, filename):

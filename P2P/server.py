@@ -3,6 +3,7 @@ import threading
 import numpy
 import time
 import random
+import binascii
 
 from .peer import Peer
 from .fileIO import FileIO
@@ -60,22 +61,56 @@ class Server:
                 print("[*] Leecher {} request download".format(client))
                 if self.policy == SEQUENCIAL_POLICY:
                     self.send_file_sequencial(self.filename, client)
-                if self.policy == RANDON_POLICY:
+                if self.policy == RANDOM_POLICY:
                     self.send_file_randon(self.filename,client)
         except Exception as ex:
             print(ex)
 
     def send_file_randon(self, filename, client):
-        print("[+] Sending file %s to Leecher %s" % (filename, client))
-        packet_id = 0
-        file = FileIO(MUSIC_FOLDER, BLOCK_SIZE)
-        total_packet = int(file.get_num_packet(filename))
-        print(total_packet)
-        list = random.sample(range(0, total_packet), total_packet)
-        #print(lista)
-        data = file.get_file_array(filename)
-        print(data[0])
-
+        try:            
+            print("[+] Sending file %s to Leecher %s" % (filename, client))
+            i = 0
+            data = [] # binary data chunk file
+            file = FileIO(MUSIC_FOLDER, BLOCK_SIZE)
+            total_packet = int(file.get_num_packet(filename))            
+            
+            self.packet_send_time = [None] * total_packet
+            
+            # list of packet random
+            list_packets = random.sample(range(0, total_packet), total_packet)
+            
+            data = file.get_file_array(filename)
+            
+            #envia apenas o pacote[0] de 320 bits            
+            #data = file.get_file_array(filename)
+            #print(data[int(0)])
+            #print("send packet %d " % int(0))            
+            #new_data = bytes(self.make_header(0), encoding='utf8') + data[int(0)]
+            #self.s.sendto(new_data, client)
+            #ts = time.time()  # time stamp departure
+            #self.packet_send_time[0] = ts
+            #sys.exit()
+            
+            for packet_id in list_packets:
+                #print("send packet %d " % int(packet_id))            
+                if packet_id == 0:
+                    print("send packet %d " % int(packet_id))
+                    print(data[int(packet_id))
+                new_data = bytes(self.make_header(packet_id), encoding='utf8') + data[int(packet_id)]
+                
+                if self.s.sendto(new_data, client):
+                    ts = time.time()  # time stamp departure
+                    self.packet_send_time[packet_id] = ts
+                    time.sleep(DELAY_FOR_SEND)  # Give receiver a bit time to send packet
+                    self.printProgressBar(i, total_packet-1, prefix='[+] Progress:', suffix='Complete', length=60)
+                i += 1
+            self.save_log_send()
+        
+        except Exception as ex:
+            print(ex)
+        except KeyboardInterrupt:
+            self.s.close()
+ 
 
     def send_file_sequencial(self, filename, client):
         try:
