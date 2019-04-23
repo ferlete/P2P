@@ -6,6 +6,7 @@ import time
 import io
 import matplotlib.pyplot as plt
 import numpy as np
+import wave
 
 from datetime import datetime
 from pydub import AudioSegment
@@ -74,8 +75,8 @@ class Client:
             self.buffer_data[packet_id] = data[5:]  # buffer for play
 
             # create to work on a different thread for play audio on download
-            # t = threading.Timer(1.0, self.play_music_on_download, args=[new_filename])
-            # t.start()
+            #t = threading.Timer(1.0, self.play_music_on_download)
+            #t.start()
 
             try:
                 while (data):
@@ -123,14 +124,14 @@ class Client:
         time.sleep(DELAY_FOR_TO_RECEIVE)  # Give receiver a bit time to received packet
         return True
 
-    def play_music_on_download(self, new_filename):
+    def play_music_on_download(self):
         try:
-            # wait for 256Kb for play audio
-            buffer_play = int(256 * kilobyte)
 
-            print("[+] Buffering... wait %d bytes" % buffer_play)
-            while len(self.buffer_data) <= buffer_play:
-                pass
+
+            print("[+] Buffering first 20 packet...")
+            time.sleep(4)
+            buffer_player = bytearray(self.buffer_data)
+
 
             print("[+] Play Buffer")
             # seg = AudioSegment(  # raw audio data (bytes)
@@ -141,7 +142,7 @@ class Client:
             #     frame_rate=44100,
             #     # stereo
             #     channels=2).set_frame_rate(16000)
-            seg = AudioSegment.from_file(io.BytesIO(self.buffer_data), format="mp3")
+            seg = AudioSegment.from_file(io.BytesIO(buffer_player), format="mp3")
             #
             # print("Information:")
             # print("Channels:", seg.channels)
@@ -151,7 +152,9 @@ class Client:
             # #saber a taxa de perda e pacotes reproduzidos
             #
 
-            play(seg)  # toca  segmento
+            #play(seg)  # toca  segmento
+
+
 
         except Exception as ex:
             print(ex)

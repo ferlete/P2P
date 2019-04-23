@@ -17,7 +17,7 @@ from P2P.constants import *
 
 def main():
     default_port = 9000
-    default_ip = '192.168.25.7'
+    default_ip = '127.0.0.1'
     info = Info('authors', 'ferlete@gmail.com', 'P2P FACOM')
     policy = SEQUENCIAL_POLICY
     seeder_alive = []

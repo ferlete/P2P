@@ -57,6 +57,7 @@ class Peer:
             s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
             s.connect(server_address)
+            s.settimeout(0.001)
             s.sendto(PING_REQUEST.encode(), server_address)
             data, server = s.recvfrom(BUFFER_SIZE)
             if data[:4].decode() == PONG_REQUEST:

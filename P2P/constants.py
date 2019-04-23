@@ -8,6 +8,8 @@ kilobyte = byte * 1024
 megabyte = kilobyte * 1024
 BLOCK_SIZE = int(320 * byte)  # file block size in bytes
 
+LEN_HEADER = 5 # Len header packet in bytes
+
 CURRENT_DIR = os.getcwd()
 FILENAME_LOG = CURRENT_DIR + "/time.log"
 SEEDER_LIST = "list_seeder.txt"
@@ -19,13 +21,12 @@ NOT_FOUND_STRING = 'FILE NOT FOUND'
 REQUEST_SLICE = "SLICE:"
 PING_REQUEST = "PING"
 PONG_REQUEST = "PONG"
-BUFFER_SIZE = BLOCK_SIZE
+BUFFER_SIZE = BLOCK_SIZE + LEN_HEADER
 SEQUENCIAL_POLICY = 'sequential'
 RANDOM_POLICY = 'random'
 DELAY_FOR_SEND = 0.001
 DELAY_FOR_TO_RECEIVE = 0.001
 
-LEN_HEADER = 5 # Len header packet in bytes
 
 
 
