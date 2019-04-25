@@ -24,6 +24,7 @@ Install the dependencies and devDependencies and start the server.
 $ apt-get install ffmpeg
 $ apt-get install python3-tk
 $ apt-get install python3-pip
+$ apt-get install python3-pyaudio 
 $ pip3 install -r requirements.txt
 $ git clone https://github.com/ferlete/P2P
 ```

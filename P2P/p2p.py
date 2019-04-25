@@ -60,7 +60,7 @@ def main():
 
             # connects to the first active seeder
             ip, port = seeder_alive[0].strip().split(':')
-            filename = input('Informe nome do arquivo: ')
+            filename = input('[+] Informe nome do arquivo: ')
             Client(str(ip), int(port), filename, args.debug)
 
     except Exception as ex:
