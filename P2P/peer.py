@@ -60,6 +60,7 @@ class Peer:
             s.settimeout(0.001)
             s.sendto(PING_REQUEST.encode(), server_address)
             data, server = s.recvfrom(BUFFER_SIZE)
+            s.close()
             if data[:4].decode() == PONG_REQUEST:
                 return True
             else:

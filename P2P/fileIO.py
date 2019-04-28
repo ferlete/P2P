@@ -44,17 +44,6 @@ class FileIO:
         sizefile = self.get_file_size(filename)
         return self.calc_number_chunk(sizefile)
 
-    def get_slice_file(self, filename, slice):
-        # TODO bug correction
-        sizefile = self.get_file_size(filename)
-        #num_chunk = self.calc_number_chunk(sizefile)
-        pos = (slice * BLOCK_SIZE)
-        with open(self.get_path(filename), 'rb') as f:
-            f.seek(pos, 0)
-            data = f.read(BLOCK_SIZE)
-        f.close()
-        return data
-
     def file_exists_path(self, filename):
         if os.path.isfile(filename):
             return True

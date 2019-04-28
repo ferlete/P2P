@@ -30,11 +30,11 @@ millisecondchunk = 50 / 1000.0
 while loop:
     timems = start
     for chunks in make_chunks(playchunk, millisecondchunk * 1000):
-        print(timems)
-        time.sleep(0.5)
+        print(playchunk)
+        #time.sleep(0.5)
         timems += millisecondchunk
         stream.write(chunks._data)
-        print(len(chunks._data))
+        #print(len(chunks._data))
         if not loop:
             break
         if timems >= start + length:

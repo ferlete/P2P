@@ -21,22 +21,36 @@ def main():
     info = Info('authors', 'ferlete@gmail.com', 'P2P FACOM')
     policy = SEQUENCIAL_POLICY
     seeder_alive = []
+    show_statistics = False
+    show_graphic = False
 
     parser = argparse.ArgumentParser(description=info.get_app_name())
     parser.add_argument('--type', '-t', dest="type", help='choice server or client',
                         default='server')  # server or client
-    parser.add_argument('--policy', '-m', dest="policy", help='transmission policy', type=str,
+    parser.add_argument('--policy', '-m', dest="policy", help='transmission policy (sequencial, random, semi-random)',
+                        type=str,
                         default=policy)  # transmission policy
     parser.add_argument('--ip', '-i', dest="ip", help='server IP', type=str, default=default_ip)  # IP Server
     parser.add_argument('--port', '-p', dest="port", help='server port', type=int, default=default_port)  # port Server
     parser.add_argument('--version', '-v', action='version', version=info.get_app_name() + __version__)  # show version
-    parser.add_argument('--debug', action='store_true',  help='increase output verbosity')
+    parser.add_argument('--statistic', action='store_true', help='show statistics only localhost server and client')
+    parser.add_argument('--graphic', action='store_true', help='Show Grafic only localhost server and client')
 
     args = parser.parse_args()
+
+    # policy transfer file
     if args.policy == RANDOM_POLICY:
         policy = RANDOM_POLICY
+    if args.policy == SEMI_RANDOM_POLICY:
+        policy = SEMI_RANDOM_POLICY
 
     try:
+
+        # optional parameters
+        if args.graphic:
+            show_graphic = True
+        if args.statistic:
+            show_statistics = True
 
         if args.type == 'server':
             # start server
@@ -46,7 +60,6 @@ def main():
             # get seeder alive
             peer = Peer()
             for seeder in peer.get_list_seeder():
-                # print(seeder.strip())
                 ip, port = seeder.strip().split(':')
                 if peer.check_seeder_alive(str(ip), int(port)):
                     seeder_alive.append(seeder)
@@ -61,7 +74,7 @@ def main():
             # connects to the first active seeder
             ip, port = seeder_alive[0].strip().split(':')
             filename = input('[+] Informe nome do arquivo: ')
-            Client(str(ip), int(port), filename, args.debug)
+            Client(str(ip), int(port), filename, seeder_alive, show_statistics, show_graphic)
 
     except Exception as ex:
         print(ex)

@@ -8,11 +8,14 @@ P2P Simulation
 
 # New Features!
 
-  - UDP server suport
-  - Sequential method
-  - Random method
-  - Show statistics
-  - Plot graphic
+  - UDP client / server
+  - Search file on seeder
+  - Seeder sends file using sequential method
+  - Seeder sends file using sequential random method
+  - Seeder sends file using sequential method semi-Random method
+  - Leecher show statistics after download
+  - Leecher Plot graphic after download
+  - Leecher check for seeder alive
   
 ### Installation
 
@@ -29,22 +32,49 @@ $ pip3 install -r requirements.txt
 $ git clone https://github.com/ferlete/P2P
 ```
 
-### Run
+### Usage
+to see how to use
+```sh
+$ cd P2P 
+$ python3 p2p-runner.py -h
+```
 
-For run UDP server method sequential
+### Server
+
+For run UDP server with method sequential
 ```sh
 $ cd P2P 
 $ python3 p2p-runner.py -t server -p 8000
 ```
 
-For run UDP server method random
+For run UDP server with method random
 ```sh
 $ cd P2P 
 $ python3 p2p-runner.py -t server -p 8000 -m random
 ```
 
+For run UDP server with method semi-random
+```sh
+$ cd P2P 
+$ python3 p2p-runner.py -t server -p 8000 -m semi-random
+```
+
+### Client
+
 For run UDP Client
 ```sh
 $ cd P2P 
 $ python3 p2p-runner.py -t client 
+```
+
+For run UDP Client with statistic
+```sh
+$ cd P2P 
+$ python3 p2p-runner.py -t client --statistic
+```
+
+For run UDP Client with graphic statistic
+```sh
+$ cd P2P 
+$ python3 p2p-runner.py -t client --graphic
 ```
