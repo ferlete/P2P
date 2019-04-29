@@ -32,7 +32,7 @@ class Client:
         self.progress = Progress()
         self.show_statistics = show_statistics
         self.show_graphic = show_graphic
-        self.logfile = FileIO()
+        self.file_io = FileIO()
         self.queue = []
         self.condition = Condition()
 
@@ -65,7 +65,7 @@ class Client:
         data, server = s.recvfrom(BUFFER_SIZE)
         if data[:7].decode() == EXISTS_STRING:
             file_size = int(data[7:].decode())
-            self.num_of_packet = int(self.calc_number_chunk(file_size))
+            self.num_of_packet = int(self.file_io.get_num_packet(self.filename))
 
             self.packet = [False] * self.num_of_packet
             self.packet_received_time = [None] * self.num_of_packet
@@ -85,20 +85,23 @@ class Client:
             t.start()
             try:
                 while (data):
+                    s.settimeout(1)  # time out
                     self.condition.acquire()
-                    if len(self.queue) == MAX_PACKET_BUFFER: # buffer full
+                    if len(self.queue) == MAX_PACKET_BUFFER:  # buffer full
                         self.condition.wait() # Space in buffer, Consumer notified the producer
+                    if packet_id == 99999:  # EOF
+                        break
 
-                    s.settimeout(1)
-                    data, addr = s.recvfrom(BUFFER_SIZE)
-                    self.packet[packet_id] = self.simulation_layer_loss_and_delay()  # simulation delay and loss
                     packet_id = int(data[:5].decode())  # five bytes for header
-                    # self.progress.printProgressBar(i, self.num_of_packet - 1, prefix='[+] Progress:',
-                    #                               suffix='Complete', length=60)
+                    self.packet[packet_id] = self.simulation_layer_loss_and_delay()  # simulation delay and loss
 
                     ts = time.time()  # timestamp in ms arrival
                     self.packet_received_time[packet_id] = ts
                     self.buffer_data[packet_id] = data[5:]
+
+
+                    # self.progress.printProgressBar(i, self.num_of_packet - 1, prefix='[+] Progress:',
+                    #                               suffix='Complete', length=60)
 
                     #queue packet audio for play
                     self.queue.append(packet_id)
@@ -106,12 +109,14 @@ class Client:
                     self.condition.release()
                     #time.sleep(random.random())
 
+                    data, addr = s.recvfrom(BUFFER_SIZE)
+
             except socket.timeout:
                 s.close()
                 print("[+] File Downloaded")
-                self.save_audio_file()
+                self.file_io.save_audio_file(self.filename, self.buffer_data)
                 if self.show_statistics:
-                    self.logfile.save_log_received(self.packet_received_time)
+                    self.file_io.save_log_received(self.packet_received_time)
                     self.display_statistics()
 
                 if self.show_graphic:
@@ -123,23 +128,9 @@ class Client:
             print("[-] File does not Exists")
             s.close()
 
-    def save_audio_file(self):
-        try:
-            new_filename = CURRENT_DIR + MUSIC_FOLDER + "new_" + self.filename
-            f = open(new_filename, 'wb')
-            for i in range(len(self.buffer_data)):
-                if self.buffer_data[i] != None:
-                    f.write(self.buffer_data[i])  # save in disk packet bytes
-                #else:
-                #    print("lost packet %d" %i)
-            f.close()
-        except Exception as ex:
-            print(ex)
-
     """
         Esta funcao deve retornar um booleano indicando se pacote chegou o foi perdido e aplicar delay
     """
-
     def simulation_layer_loss_and_delay(self):
         time.sleep(DELAY_FOR_TO_RECEIVE)  # Give receiver a bit time to received packet
         return True
@@ -187,14 +178,8 @@ class Client:
             sys.exit()
 
     """
-        calculate the number of chunks to be created
+        show statistic at the end of the audio file transmission
     """
-    def calc_number_chunk(self, bytes):
-        noOfChunks = int(bytes) / BLOCK_SIZE
-        if (bytes % BLOCK_SIZE):
-            noOfChunks += 1
-        return noOfChunks
-
     def display_statistics(self):
         try:
             print(30 * "-" + "Statistics" + 30 * "-")
@@ -207,6 +192,9 @@ class Client:
         except Exception as ex:
             print(ex)
 
+    """
+        plot graphic side by side
+    """
     def plot_grafic_side_by_side(self):
         try:
             x, y, z = np.loadtxt('time.log', comments='#', delimiter=':', unpack=True)
@@ -235,6 +223,9 @@ class Client:
         except Exception as ex:
             print(ex)
 
+    """
+        plot graphic with time send, receive and play
+    """
     def plot_grafic_times(self):
         try:
 

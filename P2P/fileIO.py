@@ -42,7 +42,7 @@ class FileIO:
 
     def get_num_packet(self, filename):
         sizefile = self.get_file_size(filename)
-        return self.calc_number_chunk(sizefile)
+        return int(self.calc_number_chunk(sizefile))
 
     def file_exists_path(self, filename):
         if os.path.isfile(filename):
@@ -106,3 +106,20 @@ class FileIO:
             f.close()
         else:
             print("File %s not found!" % FILENAME_LOG)
+
+    """
+         save audio file
+    """
+    def save_audio_file(self, filename, buffer_data):
+        try:
+            new_filename = CURRENT_DIR + MUSIC_FOLDER + "new_" + filename
+            f = open(new_filename, 'wb')
+            for i in range(len(buffer_data)):
+                if buffer_data[i] != None:
+                    f.write(buffer_data[i])  # save in disk packet bytes
+                #else:
+                #    print("lost packet %d" %i)
+            f.close()
+        except Exception as ex:
+            print(ex)
+
