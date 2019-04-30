@@ -125,7 +125,7 @@ class Server:
 
             self.packet_send_time = [None] * total_packet
 
-            half = int(total_packet/2)
+            half = int(total_packet/2) + 1
 
             # send 50% using sequencial policy
             for packet_id in range(0, half):
@@ -152,13 +152,13 @@ class Server:
                                                    length=60)
                 i += 1
 
+            self.send_EOF_packet(self.s, client)
             self.filelog.save_log_send(self.packet_send_time)
             # self.s.close()
         except Exception as ex:
             print(ex)
         except KeyboardInterrupt:
             self.s.close()
-
 
     def send_file_randon(self, filename, client):
         try:
@@ -182,6 +182,7 @@ class Server:
                     self.progress.printProgressBar(i, total_packet - 1, prefix='[+] Progress:', suffix='Complete',
                                                    length=60)
                 i += 1
+            self.send_EOF_packet(self.s, client)
             self.filelog.save_log_send(self.packet_send_time)
 
         except Exception as ex:
@@ -211,7 +212,7 @@ class Server:
                     self.progress.printProgressBar(packet_id, total_packet - 1, prefix='[+] Progress:',
                                                    suffix='Complete', length=60)
                 packet_id += 1
-
+            self.send_EOF_packet(self.s, client)
             # self.s.close()
             f.close()
             self.filelog.save_log_send(self.packet_send_time)
@@ -220,6 +221,11 @@ class Server:
             print(ex)
         except KeyboardInterrupt:
             self.s.close()
+
+    def send_EOF_packet(self, s, client):
+        # send EOF to client
+        new_data = bytes(self.make_header(PACKET_ID_EOF), encoding='utf8') + bytes("EOF", encoding='utf8')
+        s.sendto(new_data, client)
 
     def run(self):
         try:

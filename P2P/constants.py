@@ -8,8 +8,8 @@ kilobyte = byte * 1024
 megabyte = kilobyte * 1024
 BLOCK_SIZE = int(320 * byte)  # file block size in bytes
 MAX_PACKET_BUFFER = 50
-
-LEN_HEADER = 5 # Len header packet in bytes
+LEN_HEADER = 5  # Len header packet in bytes
+PACKET_ID_EOF = int(LEN_HEADER * str("9"))  # packet identifier that defines the end of the file
 
 CURRENT_DIR = os.getcwd()
 FILENAME_LOG = CURRENT_DIR + "/time.log"
@@ -26,7 +26,7 @@ BUFFER_SIZE = BLOCK_SIZE + LEN_HEADER
 SEQUENCIAL_POLICY = 'sequential'
 RANDOM_POLICY = 'random'
 SEMI_RANDOM_POLICY = 'semi-random'
-DELAY_FOR_SEND = 0.004
+DELAY_FOR_SEND = 0.001
 DELAY_FOR_TO_RECEIVE = 0.001
 
 

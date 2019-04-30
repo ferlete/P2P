@@ -50,8 +50,10 @@ class Client:
 
             # create to work on a different thread
             self.i_thread = threading.Thread(target=self.retr_file, args=[s])
-            self.i_thread.daemon = False
+            self.i_thread.daemon = True
             self.i_thread.start()
+
+            self.i_thread.join()
 
         except Exception as e:
             print(e)
@@ -89,41 +91,47 @@ class Client:
                     self.condition.acquire()
                     if len(self.queue) == MAX_PACKET_BUFFER:  # buffer full
                         self.condition.wait() # Space in buffer, Consumer notified the producer
-                    if packet_id == 99999:  # EOF
-                        break
-
                     packet_id = int(data[:5].decode())  # five bytes for header
-                    self.packet[packet_id] = self.simulation_layer_loss_and_delay()  # simulation delay and loss
+                    if packet_id == PACKET_ID_EOF:  # EOF
+                        print("[+] File Downloaded")
+                        break
+                    else:
+                        self.packet[packet_id] = self.simulation_layer_loss_and_delay()  # simulation delay and loss
 
-                    ts = time.time()  # timestamp in ms arrival
-                    self.packet_received_time[packet_id] = ts
-                    self.buffer_data[packet_id] = data[5:]
+                        ts = time.time()  # timestamp in ms arrival
+                        self.packet_received_time[packet_id] = ts
+                        self.buffer_data[packet_id] = data[5:]
 
 
-                    # self.progress.printProgressBar(i, self.num_of_packet - 1, prefix='[+] Progress:',
-                    #                               suffix='Complete', length=60)
+                        # self.progress.printProgressBar(i, self.num_of_packet - 1, prefix='[+] Progress:',
+                        #                               suffix='Complete', length=60)
 
-                    #queue packet audio for play
-                    self.queue.append(packet_id)
-                    self.condition.notify()
-                    self.condition.release()
-                    #time.sleep(random.random())
+                        #queue packet audio for play
+                        self.queue.append(packet_id)
+                        self.condition.notify()
+                        self.condition.release()
+                        #time.sleep(random.random())
 
-                    data, addr = s.recvfrom(BUFFER_SIZE)
+                        data, addr = s.recvfrom(BUFFER_SIZE)
 
             except socket.timeout:
                 s.close()
-                print("[+] File Downloaded")
-                self.file_io.save_audio_file(self.filename, self.buffer_data)
-                if self.show_statistics:
-                    self.file_io.save_log_received(self.packet_received_time)
-                    self.display_statistics()
+                print("[-] Socket Time out, Seeder stopped sending or lost EOF")
 
-                if self.show_graphic:
-                    self.plot_grafic_times()
-                    #self.plot_grafic_side_by_side()
+            # save packets and display statistics
+            self.file_io.save_audio_file(self.filename, self.buffer_data)
+            if self.show_statistics:
+                self.file_io.save_log_received(self.packet_received_time)
+                self.display_statistics()
 
-                sys.exit(0)
+            if self.show_graphic:
+                self.plot_grafic_times()
+                # self.plot_grafic_side_by_side()
+
+            s.close()
+            sys.exit()
+
+
         else:
             print("[-] File does not Exists")
             s.close()
@@ -189,6 +197,7 @@ class Client:
             print("Num Packet received: %d" % len(res))
             lost = self.num_of_packet - len(res)
             print("Num Packet lost %d" % lost)
+            print(70 * "-")
         except Exception as ex:
             print(ex)
 
