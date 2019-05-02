@@ -1,7 +1,10 @@
 import socket
-import sys, os
+import sys
+import os
 import threading
 import errno
+import time
+
 from socket import error as socket_error
 
 from P2P.constants import *
@@ -61,6 +64,7 @@ class Peer:
             s.sendto(PING_REQUEST.encode(), server_address)
             data, server = s.recvfrom(BUFFER_SIZE)
             s.close()
+
             if data[:4].decode() == PONG_REQUEST:
                 return True
             else:

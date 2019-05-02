@@ -73,48 +73,46 @@ class Server:
                     self.send_file_semi_randon(self.filename, client)
 
             # "SLICE:"
-            #if udp_data[:6].decode('utf-8').strip() == SLICE_REQUEST:
-            #    self.send_file_parallel(client, udp_data)
+            if udp_data[:6].decode('utf-8').strip() == SLICE_REQUEST:
+                self.send_file_parallel(client, udp_data)
 
             # "PING REQUEST:"
             if udp_data[:4].decode('utf-8').strip() == PING_REQUEST:
-                self.s.sendto(PONG_REQUEST.encode('utf-8'), client)
+                self.s.sendto(PONG_REQUEST.encode(), client)
 
         except Exception as ex:
             print(ex)
 
-    # def send_file_parallel(self, client, udp_data):
-    #     try:
-    #         # udp_data[6:].decode('utf-8').strip()
-    #         initial, finish, filename = udp_data[6:].decode('utf-8').strip().split(':')
-    #         print("[+] Sending block %s of %s file %s to Leecher %s" % (initial, finish, filename, client))
-    #         i = 0
-    #         # initial, finish = data.strip().split(':')
-    #         # total_packet = int(finish) - int(initial)
-    #
-    #         # print(filename)
-    #         file = FileIO()
-    #         total_packet = int(file.get_num_packet(filename))
-    #         self.packet_send_time = [None] * total_packet
-    #
-    #         data = file.get_file_array(filename)
-    #
-    #         for packet_id in range(int(initial), int(finish)):
-    #             new_data = bytes(self.make_header(packet_id), encoding='utf8') + data[int(packet_id)]
-    #
-    #             if self.s.sendto(new_data, client):
-    #                 ts = time.time()  # time stamp departure
-    #                 self.packet_send_time[packet_id] = ts
-    #                 time.sleep(DELAY_FOR_SEND)  # Give receiver a bit time to send packet
-    #                 self.progress.printProgressBar(i, (int(finish) - int(initial)) - 1, prefix='[+] Progress:',
-    #                                                suffix='Complete',
-    #                                                length=60)
-    #             i += 1
-    #
-    #     except Exception as ex:
-    #         print(ex)
-    #     except KeyboardInterrupt:
-    #         self.s.close()
+    def send_file_parallel(self, client, udp_data):
+        try:
+            #udp_data[6:].decode('utf-8').strip()
+            initial, finish, filename = udp_data[6:].decode('utf-8').strip().split(':')
+            print("[+] Sending block %s of %s file %s to Leecher %s" % (initial, finish, filename, client))
+            i = 0
+            total_packet = int(finish) - int(initial)
+            #print(filename)
+            file = FileIO()
+            total_packet = int(file.get_num_packet(filename))
+            self.packet_send_time = [None] * total_packet
+
+            data = file.get_file_array(filename)
+            for packet_id in range(int(initial), int(finish)):
+                new_data = bytes(self.make_header(packet_id), encoding='utf8') + data[int(packet_id)]
+
+                if self.s.sendto(new_data, client):
+                    ts = time.time()  # time stamp departure
+                    self.packet_send_time[packet_id] = ts
+                    time.sleep(DELAY_FOR_SEND)  # Give receiver a bit time to send packet
+                    self.progress.printProgressBar(i, (int(finish) - int(initial)) - 1, prefix='[+] Progress:',
+                                                    suffix='Complete',
+                                                    length=60)
+                i += 1
+
+        except Exception as ex:
+            print(ex)
+        except KeyboardInterrupt:
+            self.s.close()
+
     def send_file_semi_randon(self, filename, client):
         try:
             print("[+] Sending file %s to Leecher %s" % (filename, client))
@@ -123,9 +121,9 @@ class Server:
             total_packet = int(file.get_num_packet(filename))
             data = file.get_file_array(filename)  # data file
 
-            self.packet_send_time = [None] * total_packet
+            self.packet_send_time = [0] * total_packet
 
-            half = int(total_packet/2) + 1
+            half = int(total_packet/2)
 
             # send 50% using sequencial policy
             for packet_id in range(0, half):
@@ -140,7 +138,7 @@ class Server:
             # list of packet random
             list_packets = random.sample(range(half, total_packet), half)
 
-            i = half + 1
+            i = half
             # send other 50% random
             for packet_id in list_packets:
                 new_data = bytes(self.make_header(packet_id), encoding='utf8') + data[int(packet_id)]
@@ -205,8 +203,8 @@ class Server:
             while data:
                 new_data = bytes(self.make_header(packet_id), encoding='utf8') + data
                 if self.s.sendto(new_data, client):
-                    ts = time.time()  # time stamp departure
-                    self.packet_send_time[packet_id] = ts
+                    milliseconds = int(round(time.time() * 1000))  # time stamp departure
+                    self.packet_send_time[packet_id] = milliseconds
                     data = f.read(BLOCK_SIZE)
                     time.sleep(DELAY_FOR_SEND)  # Give receiver a bit time to send packet
                     self.progress.printProgressBar(packet_id, total_packet - 1, prefix='[+] Progress:',

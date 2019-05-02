@@ -5,6 +5,7 @@ import os
 import sys
 import threading
 
+
 from .client import Client
 from .info import Info
 from .peer import Peer
@@ -23,6 +24,7 @@ def main():
     seeder_alive = []
     show_statistics = False
     show_graphic = False
+    parallel = False
 
     parser = argparse.ArgumentParser(description=info.get_app_name())
     parser.add_argument('--type', '-t', dest="type", help='choice server or client',
@@ -35,6 +37,7 @@ def main():
     parser.add_argument('--version', '-v', action='version', version=info.get_app_name() + __version__)  # show version
     parser.add_argument('--statistic', action='store_true', help='show statistics only localhost server and client')
     parser.add_argument('--graphic', action='store_true', help='Show Grafic only localhost server and client')
+    parser.add_argument('--parallel', action='store_true', help='Make parallel download')
 
     args = parser.parse_args()
 
@@ -51,6 +54,8 @@ def main():
             show_graphic = True
         if args.statistic:
             show_statistics = True
+        if args.parallel:
+            parallel = True
 
         if args.type == 'server':
             # start server
@@ -68,13 +73,12 @@ def main():
                 print("[-] P2P network does not have an active seeder. See file %s" % SEEDER_LIST)
                 sys.exit()
             else:
-                print("[+] P2P seeders alive")
-                print(seeder_alive)
+                print("[+] P2P seeders alive % s" % seeder_alive)
 
             # connects to the first active seeder
             ip, port = seeder_alive[0].strip().split(':')
             filename = input('[+] Informe nome do arquivo: ')
-            Client(str(ip), int(port), filename, seeder_alive, show_statistics, show_graphic)
+            Client(str(ip), int(port), filename, seeder_alive, parallel, show_statistics, show_graphic)
 
     except Exception as ex:
         print(ex)
