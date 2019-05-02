@@ -107,6 +107,7 @@ class Server:
                                                     suffix='Complete',
                                                     length=60)
                 i += 1
+            self.filelog.save_log_send(self.packet_send_time)
 
         except Exception as ex:
             print(ex)

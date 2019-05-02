@@ -90,6 +90,7 @@ class FileIO:
          save log time received packets
      """
     def save_log_received(self, packet_received_time):
+
         if self.file_exists_path(FILENAME_LOG):
             f_received = open(FILENAME_LOG, 'r')
             data = [item for item in csv.reader(f_received, delimiter=':')]

@@ -106,6 +106,7 @@ class Client:
                     # save packets and display statistics
                     self.file_io.save_audio_file(self.filename, self.buffer_data)
                     if self.show_statistics:
+                        print("update...")
                         self.file_io.save_log_received(self.packet_received_time)
                         self.display_statistics()
                     if self.show_graphic:
