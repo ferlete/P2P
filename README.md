@@ -26,12 +26,16 @@ P2P requires [ffmpeg](https://ffmpeg.org/download.html) to run.
 Install the dependencies and devDependencies and start the server.
 
 ```sh
-$ apt-get install ffmpeg
-$ apt-get install python3-tk
-$ apt-get install python3-pip
-$ apt-get install python3-pyaudio 
-$ pip3 install -r requirements.txt
-$ git clone https://github.com/ferlete/P2P
+$ sudo apt-get install ffmpeg
+$ sudo apt-get install python3-tk
+$ sudo apt-get install python3-pip
+$ sudo apt-get install python3-pyaudio 
+$ sudo apt-get install git
+$ mkdir P2P
+$ cd P2P
+$ sudo git clone https://github.com/ferlete/P2P.git
+$ sudo pip3 install -r requirements.txt
+
 ```
 
 ### Usage
