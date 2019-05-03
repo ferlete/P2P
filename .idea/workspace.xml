@@ -1,12 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="200c6840-be56-4904-abb0-0e1b02bd1f38" name="Default" comment="bug correction">
+    <list default="true" id="200c6840-be56-4904-abb0-0e1b02bd1f38" name="Default" comment="Improvement in graphics">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/P2P/client.py" beforeDir="false" afterPath="$PROJECT_DIR$/P2P/client.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/P2P/constants.py" beforeDir="false" afterPath="$PROJECT_DIR$/P2P/constants.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/P2P/fileIO.py" beforeDir="false" afterPath="$PROJECT_DIR$/P2P/fileIO.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/P2P/p2p.py" beforeDir="false" afterPath="$PROJECT_DIR$/P2P/p2p.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -54,8 +50,8 @@
         <entry file="file://$PROJECT_DIR$/README.md">
           <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
             <state split_layout="SPLIT">
-              <first_editor relative-caret-position="804">
-                <caret line="90" column="17" selection-start-line="90" selection-start-column="17" selection-end-line="90" selection-end-column="17" />
+              <first_editor relative-caret-position="255">
+                <caret line="17" column="22" selection-start-line="17" selection-start-column="22" selection-end-line="17" selection-end-column="22" />
               </first_editor>
               <second_editor />
             </state>
@@ -535,7 +531,21 @@
       <option name="project" value="LOCAL" />
       <updated>1556831016294</updated>
     </task>
-    <option name="localTasksCounter" value="36" />
+    <task id="LOCAL-00036" summary="Improvement in graphics">
+      <created>1556895858597</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1556895858597</updated>
+    </task>
+    <task id="LOCAL-00037" summary="Improvement in graphics">
+      <created>1556896128423</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1556896128423</updated>
+    </task>
+    <option name="localTasksCounter" value="38" />
     <servers />
   </component>
   <component name="TodoView">
@@ -582,7 +592,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Alteracao texto" />
     <MESSAGE value="Alteracao de parametros" />
     <MESSAGE value="save server running" />
     <MESSAGE value="client add" />
@@ -607,7 +616,8 @@
     <MESSAGE value="check seeder alive" />
     <MESSAGE value="play" />
     <MESSAGE value="bug correction" />
-    <option name="LAST_COMMIT_MESSAGE" value="bug correction" />
+    <MESSAGE value="Improvement in graphics" />
+    <option name="LAST_COMMIT_MESSAGE" value="Improvement in graphics" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/server.py" />
@@ -779,8 +789,8 @@
     <entry file="file://$PROJECT_DIR$/README.md">
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="SPLIT">
-          <first_editor relative-caret-position="804">
-            <caret line="90" column="17" selection-start-line="90" selection-start-column="17" selection-end-line="90" selection-end-column="17" />
+          <first_editor relative-caret-position="255">
+            <caret line="17" column="22" selection-start-line="17" selection-start-column="22" selection-end-line="17" selection-end-column="22" />
           </first_editor>
           <second_editor />
         </state>

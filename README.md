@@ -1,22 +1,23 @@
 # P2P FACOM
 
-P2P Simulation
+A simple audio transfer protocol, using the UDP protocol to establish communication from one process to another
 
   - Client and Server UDP P2P network
   - Music share
   - Playback on download
 
-# New Features!
+# Features!
 
   - UDP client / server
   - Search file on seeder
   - Seeder sends file using sequential method
-  - Seeder sends file using sequential random method
-  - Seeder sends file using sequential method semi-Random method
+  - Seeder sends file using random method
+  - Seeder sends file using semi-Random method
   - Leecher show statistics after download
   - Leecher Plot graphic after download
+  - Leecher play audio after download
   - Leecher check for seeder alive
-  - Parallel download suport
+  - Parallel download support
   
 ### Installation
 
@@ -88,7 +89,11 @@ $ python3 p2p-runner.py -t server -i 127.0.0.2 -p 9000 (run new windows)
 $ python3 p2p-runner.py -t client --parallel
 ```
 
-### P2P in action
+# P2P in action
 
+### Parallel download
 [![asciicast](https://asciinema.org/a/244156.svg)](https://asciinema.org/a/244156?t=30)
+
+### Single download with statistic and play audio
+[![asciicast](https://asciinema.org/a/NQpvwXVbo1JRu8M4galhpP2tN.svg)](https://asciinema.org/a/NQpvwXVbo1JRu8M4galhpP2tN)
 
