@@ -21,15 +21,19 @@ from P2P.constants import *
 
 class Client:
 
-    def __init__(self, ip, port, filename, seeder_alive, parallel, show_statistics, show_graphic):
+    def __init__(self, ip, port, filename, seeder_alive, parallel, show_statistics, show_graphic, play_audio):
         self.filename = filename
         self.seeder_alive = seeder_alive
         self.server_address = (ip, port)
         self.packet = []  # array with packet lost or received
         self.packet_received_time = []  # array with timestamp packet received
+        self.packet_expected_time = []  # array with timestamp packet expected
+        self.packet_reproduced_time = []  # array with timestamp packet reproduced
+        self.packet_lost = []  # array with packet lost
         self.num_of_packet = 0
         self.buffer_data = []
         self.parallel = parallel
+        self.play_audio = play_audio
         self.progress = Progress()
         self.show_statistics = show_statistics
         self.show_graphic = show_graphic
@@ -37,6 +41,7 @@ class Client:
         self.queue = []
         self.condition = Condition()
         self.parallel_finish = 0
+        self.filename_download = ''
 
         try:
             # parallel donwload
@@ -65,6 +70,7 @@ class Client:
 
                     self.packet = [False] * self.num_of_packet
                     self.packet_received_time = [None] * self.num_of_packet
+                    self.packet_reproduced_time = [None] * self.num_of_packet
                     self.buffer_data = [None] * self.num_of_packet
 
                     start = finish = 0
@@ -73,7 +79,7 @@ class Client:
                     for host in self.seeder_alive:
                         ip, port = host.strip().split(':')
                         server_address = (str(ip), int(port))
-                        #print(self.server_address)
+                        # print(self.server_address)
 
                         # Create a UDP sockett
                         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -89,7 +95,8 @@ class Client:
                         s.connect(server_address)
 
                         # make thread
-                        thread = threading.Thread(target=self.retr_file_parallel, args=[s, server_address, start, finish, self.filename])
+                        thread = threading.Thread(target=self.retr_file_parallel,
+                                                  args=[s, server_address, start, finish, self.filename])
                         jobs.append(thread)
 
                         start = finish
@@ -104,14 +111,16 @@ class Client:
 
                     print("[+] Download complete!")
                     # save packets and display statistics
-                    self.file_io.save_audio_file(self.filename, self.buffer_data)
+                    self.filename_download = self.file_io.save_audio_file(self.filename, self.buffer_data)
                     if self.show_statistics:
-                        print("update...")
-                        self.file_io.save_log_received(self.packet_received_time)
+                        self.file_io.save_log_received(self.packet_received_time, self.packet_expected_time,
+                                                       self.packet_reproduced_time)
                         self.display_statistics()
                     if self.show_graphic:
                         self.plot_grafic_times()
-                        # self.plot_grafic_side_by_side()
+
+                    if self.play_audio:
+                        self.play_music(self.filename_download)
 
                     s.close()
                     sys.exit()
@@ -180,6 +189,8 @@ class Client:
 
             self.packet = [False] * self.num_of_packet
             self.packet_received_time = [None] * self.num_of_packet
+            self.packet_expected_time = [None] * self.num_of_packet
+            self.packet_reproduced_time = [None] * self.num_of_packet
             self.buffer_data = [None] * self.num_of_packet
 
             request = DOWNLOAD_STRING + self.filename
@@ -194,8 +205,12 @@ class Client:
             # create to work on a different thread for play audio on download
             t = threading.Timer(1.0, self.play_music_on_download)
             t.start()
-            #expected_packet_id = 1
-            #self.total_lost = 0
+            # expected_packet_id = 1
+            # self.total_lost = 0
+
+            milliseconds = int(round(time.time() * 1000))  # timestamp in ms arrival
+
+            self.make_expected_sequential_time(milliseconds)
 
             try:
                 last_time = int(round(time.time() * 1000))  # timestamp in ms arrival
@@ -203,7 +218,7 @@ class Client:
                     s.settimeout(1)  # set time out
                     self.condition.acquire()
                     if len(self.queue) == MAX_PACKET_BUFFER:  # buffer full
-                        self.condition.wait() # Space in buffer, Consumer notified the producer
+                        self.condition.wait()  # Space in buffer, Consumer notified the producer
                     packet_id = int(data[:5].decode())  # five bytes for header
                     if packet_id == PACKET_ID_EOF:  # EOF
                         print("[+] File Downloaded")
@@ -227,20 +242,19 @@ class Client:
                         # time most RTT, display warning
                         # if diff > 40:
                         #     print("[-] Delay %d ms packet_id %d" %(diff, packet_id))
-                        #last_time = milliseconds
+                        # last_time = milliseconds
 
                         self.packet_received_time[packet_id] = milliseconds
                         self.buffer_data[packet_id] = data[5:]
 
-
                         # self.progress.printProgressBar(i, self.num_of_packet - 1, prefix='[+] Progress:',
                         #                               suffix='Complete', length=60)
 
-                        #queue packet audio for play
+                        # queue packet audio for play
                         self.queue.append(packet_id)
                         self.condition.notify()
                         self.condition.release()
-                        #time.sleep(random.random())
+                        # time.sleep(random.random())
 
                         data, addr = s.recvfrom(BUFFER_SIZE)
 
@@ -249,14 +263,17 @@ class Client:
                 print("[-] Socket Time out, Seeder stopped sending or lost EOF")
 
             # save packets and display statistics
-            self.file_io.save_audio_file(self.filename, self.buffer_data)
+            self.filename_download = self.file_io.save_audio_file(self.filename, self.buffer_data)
             if self.show_statistics:
-                self.file_io.save_log_received(self.packet_received_time)
+                self.file_io.save_log_received(self.packet_received_time, self.packet_expected_time,
+                                               self.packet_reproduced_time)
                 self.display_statistics()
 
             if self.show_graphic:
                 self.plot_grafic_times()
-                # self.plot_grafic_side_by_side()
+
+            if self.play_audio:
+                self.play_music(self.filename_download)
 
             s.close()
             sys.exit()
@@ -264,9 +281,15 @@ class Client:
             print("[-] File does not Exists")
             s.close()
 
+    def make_expected_sequential_time(self, initial_time):
+        for i in range(len(self.packet_expected_time)):
+            self.packet_expected_time[i] = initial_time
+            initial_time = int(round(initial_time + DELAY_FOR_TO_RECEIVE * 1000))
+
     """
         Esta funcao deve retornar um booleano indicando se pacote chegou o foi perdido e aplicar delay
     """
+
     def simulation_layer_loss_and_delay(self):
         time.sleep(DELAY_FOR_TO_RECEIVE)  # Give receiver a bit time to received packet
         return True
@@ -274,49 +297,36 @@ class Client:
     """
         calculate the number of chunks to be created
     """
+
     def calc_number_chunk(self, bytes):
         noOfChunks = int(bytes) / BLOCK_SIZE
         if (bytes % BLOCK_SIZE):
             noOfChunks += 1
         return int(noOfChunks)
 
-    def play_audio(self, filename):
-        print("[+] Real player...")
+    def play_music(self, filename):
+
         seg = AudioSegment.from_file(filename, format="mp3")
-        print("Length:", seg.duration_seconds, "seconds")
-        play(seg)  # toca  musica
-
-        # seg = AudioSegment(  # raw audio data (bytes)
-        #     data=raw_data,
-        #     # 2 byte (16 bit) samples
-        #     sample_width=16,
-        #     # 44.1 kHz frame rate
-        #     frame_rate=44100,
-        #     # stereo
-        #     channels=2).set_frame_rate(16000)
-        # seg = AudioSegment.from_file(io.BytesIO(bytes_of_values), format="mp3")
-        #
-        # print("Information:")
-        # print("Channels:", seg.channels)
-        # print("Bits per sample:", seg.sample_width * 8)
-        # print("Sampling frequency:", seg.frame_rate)
-        # print("Length:", seg.duration_seconds, "seconds")  # da para fazer um calculo de quando segundos baixou para
-        # #saber a taxa de perda e pacotes reproduzidos
-        #
-
-        # play(seg)  # toca  segmento
+        print("[+] Audio Information")
+        print("[+] Channels:", seg.channels)
+        print("[+] Bits per sample:", seg.sample_width * 8)
+        print("[+] Sampling frequency:", seg.frame_rate)
+        print("[+] Length:", seg.duration_seconds, "seconds")
+        play(seg)  # play audio
 
     def play_music_on_download(self):
         try:
             while True:
                 self.condition.acquire()
                 if not self.queue:  # Buffer empty
-                    self.condition.wait() # Producer added something to queue and notified the consumer
+                    self.condition.wait()  # Producer added something to queue and notified the consumer
                 num = self.queue.pop(0)
-                #print("[-] Play packet %d" % num)
+                milliseconds = int(round(time.time() * 1000))  # timestamp in ms reproduced
+                self.packet_reproduced_time[num] = milliseconds
+                # print("[-] Play packet %d" % num)
                 self.condition.notify()
                 self.condition.release()
-                #time.sleep(random.random())
+                # time.sleep(random.random())
 
         except Exception as ex:
             print(ex)
@@ -325,6 +335,7 @@ class Client:
     """
         show statistic at the end of the audio file transmission
     """
+
     def display_statistics(self):
         try:
             print(30 * "-" + "Statistics" + 30 * "-")
@@ -334,57 +345,30 @@ class Client:
             print("Num Packet received: %d" % len(res))
             lost = self.num_of_packet - len(res)
             print("Num Packet lost %d" % lost)
-            #print("Num Packet lost count %d" % self.total_lost)
             print(70 * "-")
-        except Exception as ex:
-            print(ex)
 
-    """
-        plot graphic side by side
-    """
-    def plot_grafic_side_by_side(self):
-        try:
-            x, y, z = np.loadtxt('time.log', comments='#', delimiter=':', unpack=True)
-            # TODO mark missing packet in chart
-            # when the packet is lost the receiving time is matched with sending time
-            for i in x:
-                if z[int(i)] == 0:
-                    z[int(i)] = y[int(i)]
+            # update array with lost packets
+            for i in range(len(self.packet)):
+                if not self.packet[i]:
+                    self.packet_lost.append(i)
 
-            fig = plt.figure()
-            ax1 = fig.add_subplot(1, 2, 1)
-            ax2 = fig.add_subplot(1, 2, 2)
 
-            ax1.plot(x, y, label='Transmitted', color='green')
-            ax2.plot(x, z, label='Received', color='red')
-
-            ax1.set_xlabel('Time')
-            ax1.set_ylabel('Packet')
-            ax1.set_title('Transmitted')
-
-            ax2.set_xlabel('Time')
-            ax2.set_ylabel('Packet')
-            ax2.set_title('Received')
-
-            plt.show()
         except Exception as ex:
             print(ex)
 
     """
         plot graphic with time send, receive and play
     """
+
     def plot_grafic_times(self):
         try:
 
-            x, y, z = np.loadtxt('time.log', comments='#', delimiter=':', unpack=True)
-            # TODO mark missing packet in chart
-            # when the packet is lost the receiving time is matched with sending time
-            for i in x:
-                if z[int(i)] == 0:
-                    z[int(i)] = y[int(i)]
+            x, y, z, w = np.loadtxt('time.log', comments='#', delimiter=':', unpack=True)
 
             plt.plot(x, y, label='transmitted', linewidth=1.0)
-            plt.plot(x, z, label='Received', linewidth=0.5)
+            # when the packet is lost it is marked as x in the graph
+            plt.plot(x, z, '-rx', label='Received', linewidth=0.5, markevery=self.packet_lost)
+            plt.plot(x, w, label='reproduced', linewidth=1.0)
             plt.xlabel('Time')
             plt.ylabel('Packet')
             plt.title('Tradeoff')

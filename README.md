@@ -87,3 +87,8 @@ $ python3 p2p-runner.py -t server -i 127.0.0.1 -p 9000 (run new windows)
 $ python3 p2p-runner.py -t server -i 127.0.0.2 -p 9000 (run new windows)
 $ python3 p2p-runner.py -t client --parallel
 ```
+
+### P2P in action
+
+[![asciicast](https://asciinema.org/a/244155.svg)](https://asciinema.org/a/244155)
+

@@ -25,6 +25,7 @@ def main():
     show_statistics = False
     show_graphic = False
     parallel = False
+    play_audio = False
 
     parser = argparse.ArgumentParser(description=info.get_app_name())
     parser.add_argument('--type', '-t', dest="type", help='choice server or client',
@@ -38,6 +39,7 @@ def main():
     parser.add_argument('--statistic', action='store_true', help='show statistics only localhost server and client')
     parser.add_argument('--graphic', action='store_true', help='Show Grafic only localhost server and client')
     parser.add_argument('--parallel', action='store_true', help='Make parallel download')
+    parser.add_argument('--play', action='store_true', help='play audio file')
 
     args = parser.parse_args()
 
@@ -56,6 +58,8 @@ def main():
             show_statistics = True
         if args.parallel:
             parallel = True
+        if args.play:
+            play_audio = True
 
         if args.type == 'server':
             # start server
@@ -78,7 +82,7 @@ def main():
             # connects to the first active seeder
             ip, port = seeder_alive[0].strip().split(':')
             filename = input('[+] Informe nome do arquivo: ')
-            Client(str(ip), int(port), filename, seeder_alive, parallel, show_statistics, show_graphic)
+            Client(str(ip), int(port), filename, seeder_alive, parallel, show_statistics, show_graphic, play_audio)
 
     except Exception as ex:
         print(ex)

@@ -89,7 +89,7 @@ class FileIO:
     """
          save log time received packets
      """
-    def save_log_received(self, packet_received_time):
+    def save_log_received(self, packet_received_time, packet_expected_time, packet_reproduced_time):
 
         if self.file_exists_path(FILENAME_LOG):
             f_received = open(FILENAME_LOG, 'r')
@@ -98,9 +98,11 @@ class FileIO:
             new_data = []
             for i, item in enumerate(data):
                 if packet_received_time[int(i)] == None:
-                    item.append(0)
+                    item.append(packet_expected_time[int(i)])
+                    item.append(packet_expected_time[int(i)])
                 else:
                     item.append(packet_received_time[int(i)])
+                    item.append(packet_reproduced_time[int(i)])
                 new_data.append(item)
             f = open(FILENAME_LOG, 'w')
             csv.writer(f, delimiter=':').writerows(new_data)
@@ -123,4 +125,6 @@ class FileIO:
             f.close()
         except Exception as ex:
             print(ex)
+
+        return new_filename
 
