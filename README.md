@@ -34,7 +34,7 @@ $ sudo apt-get install git
 $ mkdir P2P
 $ cd P2P
 $ sudo git clone https://github.com/ferlete/P2P.git
-$ sudo pip3 install -r requirements.txt
+$ sudo pip3 install -r requeriments.txt
 
 ```
 
