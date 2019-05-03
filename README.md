@@ -90,5 +90,5 @@ $ python3 p2p-runner.py -t client --parallel
 
 ### P2P in action
 
-[![asciicast](https://asciinema.org/a/244155.svg)](https://asciinema.org/a/244155)
+[![asciicast](https://asciinema.org/a/244156.svg)](https://asciinema.org/a/244156?t=30)
 
