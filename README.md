@@ -1,35 +1,39 @@
 # P2P FACOM
 
-A simple audio transfer protocol, using the UDP protocol to establish communication from one process to another
+Uma simples implementação para emular um sistema P2P para transmissão de dados multimídia, usando o protocolo UDP para estabelecer comunicação de um processo a outro. 
+O sistema possui dois tipos de peers: emissor(seeder) e receptor(leecher) 
 
-  - Client and Server UDP P2P network
-  - Music share
-  - Playback on download
+  - Rede P2P de Leecher e Seeder
+  - Compartilhamento de música MP3
+  - Player de áudio
 
-# Features!
+## Características
 
-  - UDP client / server
-  - Search file on seeder
-  - Seeder sends file using sequential method
-  - Seeder sends file using random method
-  - Seeder sends file using semi-Random method
-  - Leecher show statistics after download
-  - Leecher Plot graphic after download
-  - Leecher play audio after download
-  - Leecher check for seeder alive
-  - Parallel download support
+  - Seeder e Leecher suportam UDP
+  - Pesquisa de arquivos de áudio
+  - Seeder envia arquivos utilizando métodos sequencial, aleatório e semi-aleatório
+  - Seeder suporte envio parcial de arquivo
+  - Seeder suporta envio resposta PING/PONG
+  - Leecher possui solicitação de retransmissão de pacotes faltantes
+  - Leecher mostra estatisticas após download
+  - Leecher mostra gráfico de pacotes enviados, recebidos e tocados
+  - Leecher reproduz áudio após completar download
+  - Leecher pré-visualiza áudio enquanto faz download
+  - Leecher verifica seeder ativos ao iniciar
   
-### Installation
+  
+### Instalação
 
-P2P requires [ffmpeg](https://ffmpeg.org/download.html) to run.
+P2P Facom requer [ffmpeg](https://ffmpeg.org/download.html) para reproduzir áudio.
 
-Install the dependencies and devDependencies and start the server.
+Instale as dependências para utilizar o software.
 
 ```sh
 $ sudo apt-get install ffmpeg
-$ sudo apt-get install python3-tk
 $ sudo apt-get install python3-pip
-$ sudo apt-get install python3-pyaudio 
+$ sudo apt-get install python3-pyaudio
+$ sudo apt-get install python3-pyqt5 
+$ sudo apt-get install python3-tk
 $ sudo apt-get install git
 $ mkdir P2P
 $ cd P2P
@@ -38,66 +42,38 @@ $ sudo pip3 install -r requeriments.txt
 
 ```
 
-### Usage
-to see how to use
+### Modo de uso
+para verificar modo de uso
 ```sh
 $ cd P2P 
 $ python3 p2p-runner.py -h
 ```
 
-### Server
+### Seeder
 
-For run UDP server with method sequential
+Para executar o Seeder com método sequencial
 ```sh
-$ cd P2P 
-$ python3 p2p-runner.py -t server -i 127.0.0.1 -p 9000
+$ python3 p2p-runner.py -t seeder -i 127.0.0.1 -p 9000 -m sequential
 ```
 
-For run UDP server with method random
+Para executar o Seeder com método aleatório
 ```sh
-$ cd P2P 
-$ python3 p2p-runner.py -t server -i 127.0.0.1 -p 9000 -m random
+$ python3 p2p-runner.py -t seeder -i 127.0.0.2 -p 9000 -m random
 ```
 
-For run UDP server with method semi-random
+Para executar o Seeder com método semi-aleatório
 ```sh
-$ cd P2P 
-$ python3 p2p-runner.py -t server -i 127.0.0.1 -p 9000 -m semi-random
+$ python3 p2p-runner.py -t seeder -i 127.0.0.3 -p 9000 -m semi-random
 ```
 
-### Client
+### Leecher
 
-For run UDP Client
+Para executar a interface gráfica do Leecher
 ```sh
-$ cd P2P 
-$ python3 p2p-runner.py -t client 
+$ python3 p2p-runner.py -t leecher 
 ```
 
-For run UDP Client with statistic
-```sh
-$ cd P2P 
-$ python3 p2p-runner.py -t client --statistic
-```
+### Problemas conhecidos
+Erro: Qt: Session management error: Could not open network socket
 
-For run UDP Client with graphic statistic
-```sh
-$ cd P2P 
-$ python3 p2p-runner.py -t client --graphic
-```
-
-For run UDP Client with parallel download
-```sh
-$ cd P2P 
-$ python3 p2p-runner.py -t server -i 127.0.0.1 -p 9000 (run new windows)
-$ python3 p2p-runner.py -t server -i 127.0.0.2 -p 9000 (run new windows)
-$ python3 p2p-runner.py -t client --parallel
-```
-
-# P2P in action
-
-### Parallel download
-[![asciicast](https://asciinema.org/a/244156.svg)](https://asciinema.org/a/244156?t=30)
-
-### Single download with statistic and play audio
-[![asciicast](https://asciinema.org/a/NQpvwXVbo1JRu8M4galhpP2tN.svg)](https://asciinema.org/a/NQpvwXVbo1JRu8M4galhpP2tN)
-
+Solução: $ unset SESSION_MANAGER

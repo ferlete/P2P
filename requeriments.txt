@@ -1,4 +1,4 @@
 pydub
-simpleaudio
 numpy
 matplotlib
+ConfigParser
