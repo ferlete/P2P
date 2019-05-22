@@ -50,9 +50,9 @@ class Leecher(QWidget):
     queue_packet = Q.PriorityQueue()
     _done_buffer = False
 
-    RTT = 0
-    F = 0
-    X = 0
+    RTT = 0.0
+    F = 0.0
+    Ex = 0.0
 
     # sig_start = pyqtSignal()  # needed only due to PyCharm debugger bug (!)
     sig_abort_workers = pyqtSignal()
@@ -237,7 +237,12 @@ class Leecher(QWidget):
 
                 # load config file
                 config = Config()
-                self.RTT, self.F, self.X = config.load_config()
+                self.RTT, self.F, self.Ex = config.load_config()
+                
+
+                self.RTT = float(self.RTT)
+                self.F = float(self.F)
+                self.Ex = float(self.Ex)
 
                 self.packet_lost = []
                 self.packet_delay = []
@@ -264,7 +269,7 @@ class Leecher(QWidget):
                 self.ui.txt_statistic.append("Parametros para simulação de perdas: (config.ini)\n")
                 self.ui.txt_statistic.append("RTT: " + str(self.RTT))
                 self.ui.txt_statistic.append("F: " + str(self.F))
-                self.ui.txt_statistic.append("X: " + str(self.X))
+                self.ui.txt_statistic.append("Ex: " + str(self.Ex))
                 self.ui.txt_statistic.append("\nTamanho do arquivo (bytes): " + str(self.file_size))
                 self.ui.txt_statistic.append("Tamanho do bloco (bytes): " + str(BLOCK_SIZE))
                 self.ui.txt_statistic.append("Total de pacotes: " + str(self.num_of_packet))
@@ -287,7 +292,8 @@ class Leecher(QWidget):
 
                 if self.ui.chk_preview.isChecked():
                     # create to work on a different for preview audio
-                    p = threading.Timer(5, self.play_preview)
+                    p = threading.Timer(5, self.play_preview) #codigo original
+                    #p = threading.Timer(7, self.play_preview) #Utilizado no buffer de 10% e 20%
                     p.start()
 
                 self.ui.btn_download.setDisabled(True)
@@ -608,29 +614,22 @@ class Leecher(QWidget):
 
             e = 2.71828
 
-            F = random.uniform(0.0, 10.0)
-            X = random.uniform(1.0, 10.0)
+            x = random.uniform(0.0, 100.0)
 
-            media = (1 / X)
-
-            if F > X:
-                Ex = e ** (-media * F)
-            else:
-                Ex = 1 - (e ** (-media * F))
-
-            # Receives a probability between 0 and 10
-            Ex *= 100
-
-            # update new time to packet received
-            new_time = int(round(float(self.packet_received_time[packet_id]) + float(self.RTT / 2) + float(Ex)))
-            self.packet_received_time[packet_id] = new_time
-
-            if Ex > self.RTT:
+            if x < self.F:
                 return False  # packet lost
             else:
-                return True
+                flag = random.uniform(0.0, 100.0)
+                delay = e ** ((-1/self.Ex)*flag)
+                # update new time to packet received
+                new_time = int(round(float(self.packet_received_time[packet_id]) + float(self.RTT / 2) + float(delay)))
+                self.packet_received_time[packet_id] = new_time
+
+                return True  # packet send with delay
+
         except Exception as ex:
             print(ex)
+
 
     def read_buffer(self, npackets):
         """
@@ -676,7 +675,7 @@ class Leecher(QWidget):
                 time.sleep(DELAY_FOR_SEND)  # every 1 sec of audio corresponds to approximately 80Kb
                 next = self.queue_packet.get()
 
-                if next[0] < last_packet_id:  # package arrived late in the player. or discards or requests again
+                if next[0] < last_packet_id:  # package arrived late in the player. or discards or requests again.
                     self.packet_not_player += 1
                     self.packet_delay.append(next[0])
                     #TODO improve the implementation of retransmission, for correct reproduction of the audio
@@ -747,7 +746,9 @@ class Leecher(QWidget):
 
         """
         try:
-            data = self.read_buffer(500)
+            data = self.read_buffer(500) #codigo original
+            #data = self.read_buffer(int((self.num_of_packet*10)/100)) #10% do buffer
+            #data = self.read_buffer(int((self.num_of_packet*20)/100)) #20% do buffer
             seg = AudioSegment.from_file(io.BytesIO(data), format="mp3")
             print("[+] Preview Duration:", seg.duration_seconds, "seconds")
             play(seg)

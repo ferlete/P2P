@@ -18,9 +18,9 @@ class Config:
             Returns
             -------
             str
-                RTT, F and X
+                RTT, F and Ex
 
         """
         config = configparser.ConfigParser()
         config.read('config.ini')
-        return int(config['loss simulation']['RTT']), config['loss simulation']['F'], config['loss simulation']['X']
+        return int(config['loss simulation']['RTT']), config['loss simulation']['F'], config['loss simulation']['Ex']
