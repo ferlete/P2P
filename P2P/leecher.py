@@ -23,7 +23,6 @@ from pydub.playback import play
 
 
 class Leecher(QWidget):
-
     count_seeder = 0
     file_size = 0
     num_of_packet = 0
@@ -32,6 +31,7 @@ class Leecher(QWidget):
     last_time_download = 0
     packet_not_player = 0
     packet_real_lost = 0
+    number_pause = 0
 
     packet = []
     packet_lost = []
@@ -49,6 +49,7 @@ class Leecher(QWidget):
     file_io = FileIO()
     queue_packet = Q.PriorityQueue()
     _done_buffer = False
+    _done_download = False
 
     RTT = 0.0
     F = 0.0
@@ -152,7 +153,7 @@ class Leecher(QWidget):
             self.ui.btn_download.clicked.connect(self.start_download)
             self.ui.btn_stop_download.clicked.connect(self.stop_download)
             self.ui.btn_graphic.clicked.connect(self.plot_grafic)
-            self.ui.btn_play.clicked.connect(self.play_music)
+            self.ui.btn_play.clicked.connect(self.play_file)
 
         except Exception as ex:
             print(ex)
@@ -238,7 +239,6 @@ class Leecher(QWidget):
                 # load config file
                 config = Config()
                 self.RTT, self.F, self.Ex = config.load_config()
-                
 
                 self.RTT = float(self.RTT)
                 self.F = float(self.F)
@@ -286,14 +286,13 @@ class Leecher(QWidget):
                 packet_by_seeder = int(self.num_of_packet / len(self.seeder_selected))
                 self.initial_time_download = int(round(time.time() * 1000))  # initial time download
 
-                # create to work on a different for buffer data audio
-                t = threading.Timer(1, self.make_buffer_data)
+                # create to work on a different for player audio
+                t = threading.Timer(1, self.player_simulation)
                 t.start()
 
                 if self.ui.chk_preview.isChecked():
                     # create to work on a different for preview audio
-                    p = threading.Timer(5, self.play_preview) #codigo original
-                    #p = threading.Timer(7, self.play_preview) #Utilizado no buffer de 10% e 20%
+                    p = threading.Timer(7, self.play_preview)
                     p.start()
 
                 self.ui.btn_download.setDisabled(True)
@@ -304,6 +303,9 @@ class Leecher(QWidget):
                 self.packet_not_player = 0
                 self.__workers_done = 0
                 self.work_id = 0
+                self._done_download = False
+                self.number_pause = 0
+
                 for host in self.seeder_selected:
                     ip, port = host.strip().split(':')
                     server_address = (str(ip), int(port))
@@ -409,6 +411,8 @@ class Leecher(QWidget):
             if self.__workers_done == self.work_id:
                 self.last_time_download = int(round(time.time() * 1000))  # last time download
 
+                self._done_download = True
+
                 self.ui.txt_log.append('Não existe mais tarefas ativas')
                 self.ui.btn_download.setDisabled(False)
                 self.ui.btn_stop_download.setDisabled(True)
@@ -427,7 +431,7 @@ class Leecher(QWidget):
 
                 # save log time send packets to disk
                 self.packet_real_lost = self.file_io.save_log_time(self.packet_send_time, self.packet_received_time,
-                                           self.packet_reproduced_time)
+                                                                   self.packet_reproduced_time)
         except Exception as ex:
             print(ex)
 
@@ -444,7 +448,7 @@ class Leecher(QWidget):
         """
         try:
             lost_per = (len(self.packet_lost) / self.num_of_packet) * 100
-            lost_delay = (self.packet_not_player / self.num_of_packet) * 100
+            lost_delay = ((len(self.packet_lost) + self.packet_not_player) / self.num_of_packet) * 100
             total_secs = ((self.last_time_download - self.initial_time_download) / 1000)
             throughput = (self.file_size * 8) / total_secs
             KB_s = (throughput / 8) / 1000  # Byte-based Transfer Rate Units (current, 1000-based)
@@ -455,7 +459,10 @@ class Leecher(QWidget):
             self.ui.txt_statistic.append(
                 "Fração de pacotes não tocados (perdidos por simulação): " + str(lost_per))
             self.ui.txt_statistic.append(
-                "Indice de Continuidade: " + str(100-lost_delay))
+                "Número de Pausas (buffer vazio): " + str(self.number_pause - 2))
+
+            self.ui.txt_statistic.append(
+                "Indice de Continuidade: " + str(100 - lost_delay))
 
             self.ui.txt_statistic.append("Tempo download(segundos): " + str(total_secs))
             self.ui.txt_statistic.append("Throughput (KB/s): " + str(KB_s))
@@ -620,7 +627,7 @@ class Leecher(QWidget):
                 return False  # packet lost
             else:
                 flag = random.uniform(0.0, 100.0)
-                delay = e ** ((-1/self.Ex)*flag)
+                delay = e ** ((-1 / self.Ex) * flag)
                 # update new time to packet received
                 new_time = int(round(float(self.packet_received_time[packet_id]) + float(self.RTT / 2) + float(delay)))
                 self.packet_received_time[packet_id] = new_time
@@ -629,7 +636,6 @@ class Leecher(QWidget):
 
         except Exception as ex:
             print(ex)
-
 
     def read_buffer(self, npackets):
         """
@@ -657,11 +663,11 @@ class Leecher(QWidget):
 
         return buffer
 
-    def make_buffer_data(self):
+    def player_simulation(self):
         """
-            make buffer audio.
+            player simulator.
 
-            creates audio buffer when receiving audio packets
+            this function simulates an audio player
 
             Returns
             -------
@@ -671,30 +677,36 @@ class Leecher(QWidget):
         try:
             self.buffer_player = []
             last_packet_id = 0
-            while not self.queue_packet.empty():
-                time.sleep(DELAY_FOR_SEND)  # every 1 sec of audio corresponds to approximately 80Kb
-                next = self.queue_packet.get()
+            while not self._done_download:
+                while not self.queue_packet.empty():
+                    time.sleep(0.013)  # 100 packets of 320 bytes = 1.3322448979591837 seconds
+                    packet_id, data = self.queue_packet.get(True, timeout=0.02)
 
-                if next[0] < last_packet_id:  # package arrived late in the player. or discards or requests again.
-                    self.packet_not_player += 1
-                    self.packet_delay.append(next[0])
-                    #TODO improve the implementation of retransmission, for correct reproduction of the audio
-                    #self.retransmit_packet(next[0])
-                    time.sleep(DELAY_FOR_SEND * 4)
-
-                else:
                     milliseconds = int(round(time.time() * 1000))  # timestamp in ms player
-                    self.packet_reproduced_time[last_packet_id] = milliseconds
 
-                    last_packet_id = next[0]
-                    self.buffer_player.append(next[1])
+                    if packet_id < last_packet_id:  # package arrived late in the player. or discards or requests again.
+                        self.packet_not_player += 1
+                        self.packet_delay.append(packet_id)
+                        self.packet_reproduced_time[packet_id] = milliseconds
 
+                        # TODO improve the implementation of retransmission, for correct reproduction of the audio
+                        #self.retransmit_packet(next[0])
+                        #time.sleep(DELAY_FOR_SEND * 4)
+
+                    else:
+                        last_packet_id = packet_id
+                        self.buffer_player.append(data)
+                        self.packet_reproduced_time[last_packet_id] = milliseconds
+
+                time.sleep(1)  # wait 1 second to accumulate packets in the buffer
+                self.number_pause += 1  # Buffer empty
 
             self._done_buffer = True
 
         except Exception as ex:
             print(ex)
 
+    # TODO this function must be improved to support a thread pool
     def retransmit_packet(self, packet_id):
 
         try:
@@ -746,9 +758,7 @@ class Leecher(QWidget):
 
         """
         try:
-            data = self.read_buffer(500) #codigo original
-            #data = self.read_buffer(int((self.num_of_packet*10)/100)) #10% do buffer
-            #data = self.read_buffer(int((self.num_of_packet*20)/100)) #20% do buffer
+            data = self.read_buffer(500)
             seg = AudioSegment.from_file(io.BytesIO(data), format="mp3")
             print("[+] Preview Duration:", seg.duration_seconds, "seconds")
             play(seg)
@@ -762,15 +772,15 @@ class Leecher(QWidget):
             data = self.read_buffer(30)
             while data != b'':
                 seg = AudioSegment.from_file(asyncio.BytesIO(data), format="mp3")
-                #seg = seg.set_frame_rate(16000)
-                #samples = seg.get_array_of_samples()
-                #print("[+] Samples:", samples)
+                # seg = seg.set_frame_rate(16000)
+                # samples = seg.get_array_of_samples()
+                # print("[+] Samples:", samples)
                 print("[+] Duration:", seg.duration_seconds, "seconds")
                 print("[+] Sampling frequency:", seg.frame_rate)
                 print("[+] Bits per sample:", seg.sample_width * 8)
-                #print(seg.raw_data)
+                # print(seg.raw_data)
                 play(seg)
-                #time.sleep(seg.duration_seconds)
+                # time.sleep(seg.duration_seconds)
                 data = self.read_buffer(30)
 
 
@@ -778,7 +788,27 @@ class Leecher(QWidget):
             print(ex)
             sys.exit()
 
-    def play_music(self):
+    def play_file(self):
+        """
+            play file audio.
+
+            play music
+
+            Returns
+            -------
+            nothing
+
+        """
+        try:
+
+            # create to work on a different for play file
+            p = threading.Thread(target=self.play_music, args=[self.filename_download])
+            p.start()
+
+        except Exception as ex:
+            print(ex)
+
+    def play_music(self, filename):
         """
             play audio.
 
@@ -790,7 +820,7 @@ class Leecher(QWidget):
 
         """
         try:
-            seg = AudioSegment.from_file(self.filename_download, format="mp3")
+            seg = AudioSegment.from_file(filename, format="mp3")
             print("[+] Audio Information")
             print("[+] Channels:", seg.channels)
             print("[+] Bits per sample:", seg.sample_width * 8)
@@ -818,7 +848,7 @@ class Leecher(QWidget):
             plt.plot(z, x, '-rx', label='Recebido', linewidth=0.5, markevery=self.packet_lost)
             plt.plot(w, x, '-r+', label='reproduzido', linewidth=0.5, markevery=self.packet_delay)
             plt.xlabel('Tempo (timestamp)')
-            plt.ylabel('Pacote (numero)')
+            plt.ylabel('Número do Pacote')
             plt.title('Tradeoff')
             plt.grid(True)
             plt.legend(loc=2, ncol=2)

@@ -23,4 +23,4 @@ class Config:
         """
         config = configparser.ConfigParser()
         config.read('config.ini')
-        return int(config['loss simulation']['RTT']), config['loss simulation']['F'], config['loss simulation']['Ex']
+        return float(config['loss simulation']['RTT']), config['loss simulation']['F'], config['loss simulation']['Ex']

@@ -201,9 +201,9 @@ class FileIO:
             f2 = open(FILENAME_REAL_LOST, 'w')
             for i in range(len(packet_send_time)):
                 if packet_send_time[i] != None:
+                    #print(str(packet_reproduced_time[i]) + "\n")
                     if packet_reproduced_time[i] == None:
                         packet_reproduced_time[i] = packet_reproduced_time[i-1]
-
                     f.write(str(i) + ':' + str(packet_send_time[i]) + ':' + str(packet_received_time[i]) + ':' + str(
                         packet_reproduced_time[i]) + '\n')
                 else:
