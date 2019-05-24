@@ -368,10 +368,11 @@ class Leecher(QWidget):
         """
 
         try:
-            milliseconds = int(round(time.time() * 1000))
 
             # timestamp in ms arrival
             self.packet_send_time[packet_id] = time_send
+
+            milliseconds = int(round(time.time() * 1000))
 
             # this time and updated in the simulation and loss layer
             self.packet_received_time[packet_id] = milliseconds
@@ -623,15 +624,15 @@ class Leecher(QWidget):
 
             x = random.uniform(0.0, 100.0)
 
+            flag = random.uniform(0.0, 100.0)
+            delay = e ** ((-1 / self.Ex) * flag)
+            # update new time to packet received
+            new_time = int(round(float(self.packet_received_time[packet_id]) + float(self.RTT / 2) + float(delay)))
+            self.packet_received_time[packet_id] = new_time
+
             if x < self.F:
                 return False  # packet lost
             else:
-                flag = random.uniform(0.0, 100.0)
-                delay = e ** ((-1 / self.Ex) * flag)
-                # update new time to packet received
-                new_time = int(round(float(self.packet_received_time[packet_id]) + float(self.RTT / 2) + float(delay)))
-                self.packet_received_time[packet_id] = new_time
-
                 return True  # packet send with delay
 
         except Exception as ex:
