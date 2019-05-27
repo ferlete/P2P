@@ -460,7 +460,7 @@ class Leecher(QWidget):
             self.ui.txt_statistic.append(
                 "Fração de pacotes não tocados (perdidos por simulação): " + str(lost_per))
             self.ui.txt_statistic.append(
-                "Número de Pausas (buffer vazio): " + str(self.number_pause - 2))
+                "Número de Pausas (buffer vazio): " + str(self.number_pause))
 
             self.ui.txt_statistic.append(
                 "Indice de Continuidade: " + str(100 - lost_delay))
@@ -633,7 +633,9 @@ class Leecher(QWidget):
             if x < self.F:
                 return False  # packet lost
             else:
+                time.sleep((float(self.RTT / 2) + float(delay))/1000)
                 return True  # packet send with delay
+
 
         except Exception as ex:
             print(ex)
