@@ -633,7 +633,6 @@ class Leecher(QWidget):
             if x < self.F:
                 return False  # packet lost
             else:
-                time.sleep((float(self.RTT / 2) + float(delay))/1000)
                 return True  # packet send with delay
 
 

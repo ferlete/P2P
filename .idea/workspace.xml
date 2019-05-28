@@ -4,9 +4,6 @@
     <list default="true" id="200c6840-be56-4904-abb0-0e1b02bd1f38" name="Default" comment="P2P FACOM">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/P2P/leecher.py" beforeDir="false" afterPath="$PROJECT_DIR$/P2P/leecher.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config.ini" beforeDir="false" afterPath="$PROJECT_DIR$/config.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/list_seeder.txt" beforeDir="false" afterPath="$PROJECT_DIR$/list_seeder.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/log/time.log" beforeDir="false" afterPath="$PROJECT_DIR$/log/time.log" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -16,11 +13,23 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/P2P/leecher.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="342">
+              <caret line="634" column="17" selection-start-line="634" selection-start-column="17" selection-end-line="634" selection-end-column="17" />
+              <folding>
+                <element signature="e#0#10#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/P2P/config.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="440">
-              <caret line="20" column="29" selection-start-line="20" selection-start-column="29" selection-end-line="20" selection-end-column="29" />
+            <state relative-caret-position="120">
+              <caret line="11" column="8" selection-start-line="11" selection-start-column="8" selection-end-line="11" selection-end-column="8" />
               <folding>
                 <element signature="e#0#19#0" expanded="true" />
               </folding>
@@ -29,72 +38,21 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/P2P/p2p.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="198">
-              <caret line="9" column="12" selection-start-line="9" selection-start-column="12" selection-end-line="9" selection-end-column="12" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/config.ini">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="22">
-              <caret line="1" column="5" selection-start-line="1" selection-start-column="5" selection-end-line="1" selection-end-column="5" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/P2P/leecher.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-174">
-              <caret line="603" column="8" selection-start-line="603" selection-start-column="8" selection-end-line="603" selection-end-column="8" />
-              <folding>
-                <element signature="e#0#10#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/P2P/seeder.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="424">
-              <caret line="109" column="60" selection-start-line="109" selection-start-column="60" selection-end-line="109" selection-end-column="60" />
-              <folding>
-                <element signature="e#0#12#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/requeriments.txt">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="66">
-              <caret line="3" column="12" selection-start-line="3" selection-end-line="3" selection-end-column="12" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/log/time.log">
           <provider selected="true" editor-type-id="LogFileEditorProvider">
-            <state relative-caret-position="5346">
-              <caret line="243" selection-start-line="243" selection-end-line="243" />
+            <state relative-caret-position="1425">
+              <caret line="95" column="30" selection-start-line="95" selection-start-column="30" selection-end-line="95" selection-end-column="30" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/P2P/download.py">
+        <entry file="file://$PROJECT_DIR$/P2P/fileIO.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1452">
-              <caret line="70" column="22" selection-start-line="70" selection-start-column="22" selection-end-line="70" selection-end-column="22" />
+            <state relative-caret-position="3000">
+              <caret line="205" column="20" selection-start-line="205" selection-start-column="20" selection-end-line="205" selection-end-column="20" />
               <folding>
-                <element signature="e#0#10#0" expanded="true" />
+                <element signature="e#0#14#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -103,20 +61,17 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/P2P/constants.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="360">
-              <caret line="29" selection-start-line="29" selection-end-line="29" />
+            <state relative-caret-position="135">
+              <caret line="9" column="20" selection-start-line="9" selection-start-column="20" selection-end-line="9" selection-end-column="20" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/P2P/peer.py">
+        <entry file="file://$PROJECT_DIR$/config.ini">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3366">
-              <caret line="161" column="40" selection-start-line="161" selection-start-column="25" selection-end-line="161" selection-end-column="40" />
-              <folding>
-                <element signature="e#0#12#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="30">
+              <caret line="2" column="3" selection-start-line="2" selection-start-column="3" selection-end-line="2" selection-end-column="3" />
             </state>
           </provider>
         </entry>
@@ -213,8 +168,8 @@
         <option value="$PROJECT_DIR$/P2P/config.py" />
         <option value="$PROJECT_DIR$/log/time.log" />
         <option value="$PROJECT_DIR$/P2P/fileIO.py" />
-        <option value="$PROJECT_DIR$/P2P/leecher.py" />
         <option value="$PROJECT_DIR$/config.ini" />
+        <option value="$PROJECT_DIR$/P2P/leecher.py" />
       </list>
     </option>
   </component>
@@ -230,7 +185,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -241,7 +195,7 @@
             <path>
               <item name="P2P" type="b2602c69:ProjectViewProjectNode" />
               <item name="P2P" type="462c0819:PsiDirectoryNode" />
-              <item name="layout" type="462c0819:PsiDirectoryNode" />
+              <item name="log" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="P2P" type="b2602c69:ProjectViewProjectNode" />
@@ -252,6 +206,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -278,54 +233,6 @@
         </RuleState>
       </list>
     </option>
-  </component>
-  <component name="RunManager" selected="Python.Client">
-    <configuration name="Client" type="PythonConfigurationType" factoryName="Python">
-      <module name="P2P" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="/usr/bin/python3.5" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/p2p-runner.py" />
-      <option name="PARAMETERS" value="-t leecher" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="server" type="PythonConfigurationType" factoryName="Python">
-      <module name="P2P" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="/usr/bin/python3.5" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/p2p-runner.py" />
-      <option name="PARAMETERS" value="-t seeder -ip 127.0.0.1 -p 9000" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <list>
-      <item itemvalue="Python.Client" />
-      <item itemvalue="Python.server" />
-    </list>
   </component>
   <component name="SvnConfiguration">
     <configuration />
@@ -641,8 +548,8 @@
     <frame x="0" y="0" width="1920" height="1044" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.48471615" visible="true" weight="0.24775963" />
-      <window_info active="true" id="Structure" order="1" sideWeight="0.5152838" side_tool="true" visible="true" weight="0.24775963" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.48726115" visible="true" weight="0.24775963" />
+      <window_info active="true" id="Structure" order="1" sideWeight="0.5127388" side_tool="true" visible="true" weight="0.24775963" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" sideWeight="0.49710068" weight="0.33187774" />
@@ -653,7 +560,7 @@
       <window_info anchor="bottom" id="TODO" order="6" sideWeight="0.49973643" weight="0.32897604" />
       <window_info anchor="bottom" id="Terminal" order="7" sideWeight="0.49973643" weight="0.518559" />
       <window_info anchor="bottom" id="Python Console" order="8" sideWeight="0.49973643" weight="0.32969433" />
-      <window_info anchor="bottom" id="Version Control" order="9" sideWeight="0.49815497" weight="0.31441048" />
+      <window_info anchor="bottom" id="Version Control" order="9" sideWeight="0.49815497" visible="true" weight="0.31441048" />
       <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.5028993" side_tool="true" weight="0.03275109" />
       <window_info active="true" anchor="bottom" id="GitHub Pull Requests" order="11" sideWeight="0.49920928" weight="0.03275109" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
@@ -815,16 +722,6 @@
     <entry file="file://$PROJECT_DIR$/log/real_lost.log">
       <provider selected="true" editor-type-id="LogFileEditorProvider" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/P2P/fileIO.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="353">
-          <caret line="205" column="20" selection-start-line="205" selection-start-column="20" selection-end-line="205" selection-end-column="20" />
-          <folding>
-            <element signature="e#0#14#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/P2P/leecher_UI.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2002">
@@ -836,13 +733,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="66">
           <caret line="3" column="12" selection-start-line="3" selection-end-line="3" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/log/time.log">
-      <provider selected="true" editor-type-id="LogFileEditorProvider">
-        <state relative-caret-position="5346">
-          <caret line="243" selection-start-line="243" selection-end-line="243" />
         </state>
       </provider>
     </entry>
@@ -866,23 +756,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/P2P/constants.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="360">
-          <caret line="29" selection-start-line="29" selection-end-line="29" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/P2P/config.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="440">
-          <caret line="20" column="29" selection-start-line="20" selection-start-column="29" selection-end-line="20" selection-end-column="29" />
-          <folding>
-            <element signature="e#0#19#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/P2P/p2p.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="198">
@@ -902,18 +775,52 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/P2P/leecher.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-174">
-          <caret line="603" column="8" selection-start-line="603" selection-start-column="8" selection-end-line="603" selection-end-column="8" />
+        <state relative-caret-position="342">
+          <caret line="634" column="17" selection-start-line="634" selection-start-column="17" selection-end-line="634" selection-end-column="17" />
           <folding>
             <element signature="e#0#10#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/P2P/config.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="120">
+          <caret line="11" column="8" selection-start-line="11" selection-start-column="8" selection-end-line="11" selection-end-column="8" />
+          <folding>
+            <element signature="e#0#19#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/log/time.log">
+      <provider selected="true" editor-type-id="LogFileEditorProvider">
+        <state relative-caret-position="1425">
+          <caret line="95" column="30" selection-start-line="95" selection-start-column="30" selection-end-line="95" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/P2P/fileIO.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3000">
+          <caret line="205" column="20" selection-start-line="205" selection-start-column="20" selection-end-line="205" selection-end-column="20" />
+          <folding>
+            <element signature="e#0#14#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/P2P/constants.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="135">
+          <caret line="9" column="20" selection-start-line="9" selection-start-column="20" selection-end-line="9" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/config.ini">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="22">
-          <caret line="1" column="5" selection-start-line="1" selection-start-column="5" selection-end-line="1" selection-end-column="5" />
+        <state relative-caret-position="30">
+          <caret line="2" column="3" selection-start-line="2" selection-start-column="3" selection-end-line="2" selection-end-column="3" />
         </state>
       </provider>
     </entry>
